@@ -85,10 +85,11 @@ hf=NULL;
 
 }
 void free_Vertex(template_v*v)
-{if(v->point!=NULL)
+{   
+    if(v->point!=NULL)
 	{
 	
-free(v->point);
+    free(v->point);
 	}
 	if(v->faces!=NULL)
 	{
@@ -99,8 +100,8 @@ free(v->point);
 	{
 	free_node(v->cells);
 	}
-free(v);
-v=NULL;
+    free(v);
+    v=NULL;
 //return true;
 }
 void free_Face(template_f*f)

@@ -5,6 +5,7 @@
 #include<time.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include<stb_image.h>
+#include "Mesh_Viewer_data.h"
 
 #include<iostream>
 //#include<Algorithm.h>
@@ -265,6 +266,7 @@ void prepare_mesh_data()
         GLuint *Buffers=m_v_data.Buffers[node_i];
         glBindBuffer(GL_ARRAY_BUFFER,Buffers[0]);
     //printf("sizeof vertices: %d\n",sizeof(vertices));
+        //glBufferData设置新的数据，旧的会被释放掉
         glBufferData(GL_ARRAY_BUFFER,sizeof(GLfloat)*F->rows()*3*3,vertices,GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,Buffers[1]);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(unsigned int)*F->rows()*3,indices,GL_STATIC_DRAW);
@@ -399,9 +401,10 @@ void show()
  Arcroll_init(&arc);
 
    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,5);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+   //实践证明还是不指定版本号比较好
+   // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,4);
+    //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,5);
+    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     GLFWwindow* window=glfwCreateWindow(800,600,"learnopengl",NULL,NULL);
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,GL_TRUE);
@@ -444,7 +447,7 @@ void show()
     GLuint program;
     program=_Program_(shaders);
    // printf("finish generate program\n");
-        
+       
     glUseProgram(program);//开启这个词更合适
 //*****************************************
 //glGenVertexArrays(1,VAOs);

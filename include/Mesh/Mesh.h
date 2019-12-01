@@ -46,9 +46,7 @@ typedef struct Mesh{
 	std::map<int, template_f*> faces;
 	std::map<int,template_v*>vertices;
     std::map<int,template_hf*> halffaces;
-
-	//map_t* cells=create_map(int,void*);
-
+	//map_t*cells=create_map(int,void*);
 	int cell_id=0,vertex_id=0,face_id=0,halfface_id=0;
 	MeshT traits;
     template_v  (*get_vertex)(struct Mesh*,int)=Mesh_get_vertex;

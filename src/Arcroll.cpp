@@ -63,12 +63,12 @@ void Arcroll_L_Move(struct Arcroll *own)
 }
 void Arcroll_R_Move(struct Arcroll* own)
 {
-float tempx=own->ginfo->mouse_coord[0]-own->t_mouse_coord[0],tempy=own->ginfo->mouse_coord[1]-own->t_mouse_coord[1];
-own->Resul.coeffRef(0,3)+=tempx*0.005;
-own->Resul.coeffRef(1,3)-=tempy*0.005;
+    float tempx=own->ginfo->mouse_coord[0]-own->t_mouse_coord[0],tempy=own->ginfo->mouse_coord[1]-own->t_mouse_coord[1];
+    own->Resul.coeffRef(0,3)+=tempx*0.005;
+    own->Resul.coeffRef(1,3)-=tempy*0.005;
 //own->TR.coeffRef(0,3)+=tempx*0.005;
 //own->TR.coeffRef(1,3)-=tempy*0.005;
-own->t_mouse_coord[0]=own->ginfo->mouse_coord[0];own->t_mouse_coord[1]=own->ginfo->mouse_coord[1];
+    own->t_mouse_coord[0]=own->ginfo->mouse_coord[0];own->t_mouse_coord[1]=own->ginfo->mouse_coord[1];
 }
 float* Arcroll_data(struct Arcroll* own)
 {
@@ -95,15 +95,15 @@ own->data[3*4+i]=0.0f;
 }
 own->data[15]=1.0f;*/
 //Eigen::Matrix4f temp_tr=own->MV_INVERSE*own->TR*own->MV;
-for(int i=0;i<4;i++)
-{
-for(int j=0;j<4;j++)
-{
-own->data[i*4+j]=own->Resul.coeff(i,j);
+    for(int i=0;i<4;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            own->data[i*4+j]=own->Resul.coeff(i,j);
 
-}
-}
-return own->data;
+        }
+    }
+    return own->data;
 }
 void Arcroll_M_Move(struct Arcroll*own,double y)
 {

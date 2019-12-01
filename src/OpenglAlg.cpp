@@ -1,6 +1,6 @@
 #undef OpenglAlg
 #include<Mesh_view/OpenglAlg.h>
-void GlobalInfo_init(GlobalInfo *ginf)
+void GlobalInfo_init(Interactor_GlobalInfo *ginf)
 {
 	ginf->mouse_coord=(float*)malloc(sizeof(float)*2);
 	ginf->resolution=(int*)malloc(sizeof(int)*2); 

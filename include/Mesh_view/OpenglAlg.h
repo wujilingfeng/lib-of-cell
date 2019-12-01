@@ -14,7 +14,7 @@
 #define _ReadFile_ OpenglAlg_ReadFile
 #define _Shader_ OpenglAlg_Shader
 #define _Texture_ OpenglAlg_Texture
-typedef struct GlobalInfo{
+typedef struct Interactor_GlobalInfo{
 	float run_time=-1;
 	float *mouse_coord=NULL;
 	int *resolution=NULL;
@@ -24,12 +24,13 @@ typedef struct GlobalInfo{
 	int key_action=0;
 	int mods=-1;
 	unsigned char *readpixelcolor;
-}GlobalInfo;
+}Interactor_GlobalInfo;
 typedef struct Mesh_view_data{
     Node* F_V=NULL;
     Node* F_F=NULL;
     Node* E_V=NULL;
     Node* E_E=NULL;
+    Node* V=NULL;
     float** F_color=NULL;
     //关于选面的information
 	int information=-1;
@@ -44,7 +45,7 @@ typedef struct Mesh_view_data{
 void Mesh_view_data_init(Mesh_view_data* );
 //Mesh_view_data m_v_data;
 
-void GlobalInfo_init(GlobalInfo* ginf);
+void GlobalInfo_init(Interactor_GlobalInfo* ginf);
 typedef struct ShaderInfo{
 GLenum type;
 const char* filename;

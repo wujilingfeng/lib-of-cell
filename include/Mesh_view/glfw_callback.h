@@ -5,7 +5,7 @@
 
 #include "Arcroll.h"
 #include<GLFW/glfw3.h>
-GlobalInfo globalinfo;
+Interactor_GlobalInfo globalinfo;
 Arcroll arc;
 
 Mesh_view_data m_v_data;

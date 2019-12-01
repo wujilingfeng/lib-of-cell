@@ -11,7 +11,7 @@ void Arcroll_M_Move(struct Arcroll*,double);
 void Arcroll_R_Move(struct Arcroll*);
 
 typedef struct Arcroll{
-GlobalInfo * ginfo;
+Interactor_GlobalInfo * ginfo;
 float* t_mouse_coord;
 void (*init)(struct Arcroll*)=Arcroll_init;
 void (*L_init)(struct Arcroll*)=Arcroll_L_init;

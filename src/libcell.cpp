@@ -26,6 +26,7 @@ void libo_test(struct Mesh* mesh,template_c* c,double* p)
         
     }
 
+
     for(int i=0;i<size;i++)
     {
         for(int j=0;j<p_size;j++)
@@ -105,7 +106,6 @@ void divi()
 
         libo_test(&mesh,c,p);
         
-    
     }
    for(auto vit=mesh.vertices.begin();vit!=mesh.vertices.end();vit++)
     {
@@ -131,8 +131,23 @@ void test()
     {
         Mesh mesh1;
         _ReadCell_(&mesh1,"face.cell");
+
     
     }*/
+     
+     /* char *wday[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+    time_t timep;
+    struct tm *p;
+    time(&timep);
+    p = localtime(&timep); //取得当地时间
+    printf ("%d%d%d ", (1900+p->tm_year), (1+p->tm_mon), p->tm_mday);
+    printf("%s%d:%d:%d\n", wday[p->tm_wday], p->tm_hour, p->tm_min, p->tm_sec);
+*/
+    
+    char *str=(char*)malloc(sizeof(char)*10);
+    str[0]='3';
+    str[1]='\0';
+    printf("str:%d\n",strlen(str));
     Mesh mesh;
     _ReadCell_(&mesh,"bunny.cell");
    // _ReadOff_(&mesh,"cube_.off",3);
