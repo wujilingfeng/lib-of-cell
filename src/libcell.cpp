@@ -1,6 +1,7 @@
 //#include<Python.h>
 //#include "Dense"
 #include<Mesh_view/Mesh_viewer.h>
+#include<Mesh_view/Mesh_Viewer_data.h>
 #include<Mesh_IO/Mesh_IO.h>
 #include<Algorithm.h>
 //#include<iostream>
@@ -144,12 +145,12 @@ void test()
     printf("%s%d:%d:%d\n", wday[p->tm_wday], p->tm_hour, p->tm_min, p->tm_sec);
 */
     
-    char *str=(char*)malloc(sizeof(char)*10);
-    str[0]='3';
-    str[1]='\0';
-    printf("str:%d\n",strlen(str));
+    Mesh_view_something ms;
+    Mesh_view_something_init(&ms);
+    Mesh_viewer_world mesh_view_world;
+    Mesh_viewer_world_init(&mesh_view_world);    
     Mesh mesh;
-    _ReadCell_(&mesh,"bunny.cell");
+    _ReadCell_(&mesh,"cube.cell");
    // _ReadOff_(&mesh,"cube_.off",3);
     int num_c=mesh.num_c(&mesh);
     printf("num_c : %d num_v : %d num_f: %d num_hf: %d\n",num_c,mesh.num_v(&mesh)*2,mesh.num_f(&mesh),mesh.halfface_id);
