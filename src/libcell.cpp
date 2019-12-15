@@ -124,6 +124,23 @@ void divi()
 
 
 }
+void test_mesh_viewer_data()
+{
+    Mesh_viewer_world m_world;
+    Mesh_viewer_world_init(&m_world); 
+
+    char temp_c[]="ad";
+    if(strcmp(temp_c,"ad")==0)
+    {
+        printf("shide\n");
+    }
+    //Mesh_view_something ms;
+    //Mesh_view_something_init(&ms);
+   
+    
+
+
+}
 
 void test()
 {
@@ -144,11 +161,8 @@ void test()
     printf ("%d%d%d ", (1900+p->tm_year), (1+p->tm_mon), p->tm_mday);
     printf("%s%d:%d:%d\n", wday[p->tm_wday], p->tm_hour, p->tm_min, p->tm_sec);
 */
-    
-    Mesh_view_something ms;
-    Mesh_view_something_init(&ms);
-    Mesh_viewer_world mesh_view_world;
-    Mesh_viewer_world_init(&mesh_view_world);    
+    test_mesh_viewer_data();
+      
     Mesh mesh;
     _ReadCell_(&mesh,"cube.cell");
    // _ReadOff_(&mesh,"cube_.off",3);

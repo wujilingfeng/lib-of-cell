@@ -47,7 +47,7 @@ Node* Mesh_viewer_world_registe(Mesh_viewer_world*m,char*c)
 		{
 			free(temp_c);
 			re=node_overlying(re,id->value);
-			free_node(id);
+			
 
 		}
 		else
@@ -59,7 +59,9 @@ Node* Mesh_viewer_world_registe(Mesh_viewer_world*m,char*c)
 			int *temp_id=(int*)malloc(sizeof(int));
 			*temp_id=species_id;
 			re=node_overlying(re,(void*)temp_id);
+			free(id->value);
 		}
+		free_node(id);
 		if(c[j]=='\0')
 		{
 			break;
@@ -102,7 +104,7 @@ void Mesh_view_something_init(Mesh_view_something*ms)
 	ms->disappear=1;
 	ms->prop=NULL;
 	ms->mesh=NULL;
-	ms->avatar=NULL;
+	ms->history_avatar=NULL;
 	ms->evolution=NULL;
 }
 Node* Mesh_viewer_world_find_species(Mesh_viewer_world*mw,char* c)
@@ -156,6 +158,7 @@ Node* Mesh_viewer_world_find_species(Mesh_viewer_world*mw,char* c)
 	
 	return re;
 }
+
 Node* Mesh_viewer_world_create_something(struct Mesh_viewer_world*mw,char *c)
 {
 	Node* id_list=Mesh_viewer_world_registe(mw,c),*re=0;
@@ -198,4 +201,48 @@ Node* Mesh_viewer_world_create_something(struct Mesh_viewer_world*mw,char *c)
 	free_node(id_list);
 	return re;
 
+}
+Node* Mesh_viewer_from_something_evolute(Node*lis)
+{
+	Node* re=0;
+	if(re==0)
+	{
+		return re;
+
+	}
+	if(re->value==0)
+	{
+		return re;
+	}
+	Node* iter=lis;
+	while(iter!=0)
+	{
+		Mesh_view_something* ms=(Mesh_view_something*)iter->value;
+		void *value=0;
+		if(strcmp(ms->name,"points")==0)
+		{
+			Mesh_viewer_points* temp_e=(Mesh_viewer_points*)malloc(sizeof(Mesh_viewer_points));
+			value=(void*)temp_e;
+		
+
+		}
+		else if(strcmp(ms->name,"edges")==0)
+		{
+			Mesh_viewer_edges* temp_e=(Mesh_viewer_edges*)malloc(sizeof(Mesh_viewer_edges));
+			value=(void*)temp_e;
+
+		}
+		else if(strcmp(ms->name,"faces")==0)
+		{
+
+			Mesh_viewer_faces* temp_e=(Mesh_viewer_faces*)malloc(sizeof(Mesh_viewer_faces));
+			value=(void*)temp_e;
+		}
+		ms->evolution=value;
+		re=node_overlying(re,value);
+		iter=(Node*)iter->Next;
+	}
+
+
+	return re;
 }
