@@ -3,10 +3,10 @@
 #include<stdlib.h>
 typedef struct Node
 {
-    void* Prev=NULL;
-    void* value=NULL;
-    void*  Next=NULL;
-    void* traits=NULL;
+    void* Prev=0;
+    void* value=0;
+    void*  Next=0;
+    void* traits=0;
 
 }Node;
 void free_node(Node*);

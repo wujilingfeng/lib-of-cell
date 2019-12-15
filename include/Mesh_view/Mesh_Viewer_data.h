@@ -16,8 +16,8 @@ typedef struct Mesh_view_something{
 	int disappear;
 	void* prop;
 	void* mesh;
-	//分身
-	Node* avatar;
+	//（历史记录）分身
+	Node* history_avatar;
 	void* evolution;
 }Mesh_view_something;
 Node* Mesh_viewer_world_create_something(struct Mesh_viewer_world*,char *);
@@ -25,6 +25,7 @@ void Mesh_viewer_world_registe1(Mesh_viewer_world*,char**,int);
 Node* Mesh_viewer_world_registe(Mesh_viewer_world*,char*);
 void Mesh_viewer_world_init(Mesh_viewer_world*);
 Node* Mesh_viewer_world_find_species(Mesh_viewer_world*,char*);
+Node* Mesh_viewer_from_something_evolute(Node*);
 typedef struct Mesh_viewer_world{
 	int species_id;
 	std::map<int,Node*>species;
@@ -38,17 +39,27 @@ typedef struct Mesh_viewer_world{
 typedef struct Mesh_viewer_points
 {
 	double *Data,*color;
-	int* Data_index;
+	unsigned int* Data_index;
 	GLuint VAO,*Buffers;
 	void *prop;
 	void* evolution;
 }Mesh_viewer_points;
 typedef struct Mesh_viewer_edges
 {
+	double *Data,*color;
+	unsigned int* Data_index;
+	GLuint VAO,*Buffers;
+	void *prop;
+	void* evolution;
 
 }Mesh_viewer_edges;
 typedef struct Mesh_viewer_faces
 {
+	double *Data,*color;
+	unsigned int* Data_index;
+	GLuint VAO,*Buffers;
+	void* prop;
+	void* evolution;
 
 }Mesh_viewer_faces;
 #endif
