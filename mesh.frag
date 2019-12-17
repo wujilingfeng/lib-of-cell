@@ -85,9 +85,9 @@ vec3 trans_code(float a)
     
     return re;
 
-
-
 }
+void te()
+{}
 void main()
 {
     vec2 uv=gl_FragCoord.xy/iResolution.xy;
@@ -107,52 +107,22 @@ void main()
      
     
     code=id_in.z;
-    if(coord.x>=coord.y&&coord.y>=coord.z)
-    {
-        code1=3; 
+    code1=0;
+    code=id_in.z;
+   code1+=3*max(sign(max(sign(coord.x-coord.y),0)+max(sign(coord.y-coord.z),0)-1.5),0);
+    code1+=1*max(sign(max(sign(coord.y-coord.x),0)+max(sign(coord.x-coord.z),0)-1.5),0);
+    code1+=7*max(sign(max(sign(coord.y-coord.z),0)+max(sign(coord.z-coord.x),0)-1.5),0);
+    code1+=6*max(sign(max(sign(coord.x-coord.z),0)+max(sign(coord.z-coord.y),0)-1.5),0);
+    code1+=2*max(sign(max(sign(coord.z-coord.x),0)+max(sign(coord.x-coord.y),0)-1.5),0);
+    code1+=5*max(sign(max(sign(coord.z-coord.y),0)+max(sign(coord.y-coord.x),0)-1.5),0);
     
-    }
-    else if(coord.y>=coord.x&&coord.x>=coord.z)
-    {
-        code1=1;
-    
-    
-    }
-    else if(coord.y>=coord.z&&coord.z>=coord.x)
-    {
-        code1=7;
-    
-    }
-    else if(coord.x>=coord.z&&coord.z>=coord.y)
-    {
-        code1=6;
-    
-    }
-    else if(coord.z>=coord.x&&coord.x>=coord.y)
-    {
-        code1=2;
-    }
-    else
-    {
-        code1=5;
-    }
-    
-    fColor=vec4(ourColor,0.2);
+    //fColor=vec4(ourColor,0.2);
 
-    
-    if(abs(uv.x-coord_uv.x)<=2/iResolution.x&&abs(uv.y-coord_uv.y)<=2/iResolution.y)
-    {
-        if(abs(uv.x-coord_uv.x)<=1/iResolution.x&&abs(uv.y-coord_uv.y)<=1/iResolution.y)
-        {
-         fColor=vec4(trans_code(code)/255.0,code1/255);
-
-        }
-        else
-        {
-            fColor=vec4(trans_code(code)/255.0,code1/255);
-        }
-    
-    }
+    vec2 temp_situ;
+    temp_situ.x=max(sign(abs(uv.x-coord_uv.x)/2.0*iResolution.x-1),sign(abs(uv.y-coord_uv.y)/2.0*iResolution.y-1));
+    temp_situ.x=max(temp_situ.x,0);
+    temp_situ.y=sign(1-temp_situ.x);
+   fColor=vec4(ourColor,0.2)*temp_situ.x+vec4(trans_code(code)/255.0,code1/255)*temp_situ.y;
    
   
     //i_color();
