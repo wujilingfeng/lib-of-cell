@@ -35,28 +35,34 @@ typedef struct Mesh_viewer_world{
 
 	//Mesh_view_something*(*create_something)(struct Mesh_viewer_world*,char*)=Mesh_viewer_world_create_something;
 }Mesh_viewer_world;
-
+void Mesh_viewer_points_init(struct Mesh_viewer_points*);
 typedef struct Mesh_viewer_points
 {
-	double *Data,*color;
+	float *Data,*color;
 	unsigned int* Data_index;
 	GLuint VAO,*Buffers;
 	void *prop;
 	void* evolution;
 }Mesh_viewer_points;
+void Mesh_viewer_edges_init(struct Mesh_viewer_edges*);
 typedef struct Mesh_viewer_edges
 {
-	double *Data,*color;
+	float *Data,*color;
 	unsigned int* Data_index;
 	GLuint VAO,*Buffers;
 	void *prop;
 	void* evolution;
 
 }Mesh_viewer_edges;
+void Mesh_viewer_faces_init(struct Mesh_viewer_faces*);
 typedef struct Mesh_viewer_faces
 {
-	double *Data,*color;
+	float *Data,*color;
 	unsigned int* Data_index;
+	float *marked_edges_data;
+	unsigned int* marked_edges_index;
+	float *marked_faces_data;
+	unsigned int* marked_faces_index;
 	GLuint VAO,*Buffers;
 	void* prop;
 	void* evolution;

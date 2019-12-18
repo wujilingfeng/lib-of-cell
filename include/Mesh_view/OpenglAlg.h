@@ -14,6 +14,7 @@
 #define _ReadFile_ OpenglAlg_ReadFile
 #define _Shader_ OpenglAlg_Shader
 #define _Texture_ OpenglAlg_Texture
+#define _Texture_Array OpenglAlg_Texture_Array
 typedef struct Interactor_GlobalInfo{
 	float run_time=-1;
 	float *mouse_coord=NULL;
@@ -169,6 +170,6 @@ void _Shader_(ShaderInfo* shaders);
 GLuint _Program_ (ShaderInfo* shaderinfos);
 
 void _Texture_ (ImageInfo& image,GLuint texture);
-
+void _Texture_Array(int width, int height,float * data, int dataType, int srcFormat, int internalFormat);
 
 #endif

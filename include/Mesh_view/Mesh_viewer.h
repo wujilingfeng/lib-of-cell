@@ -51,8 +51,9 @@ for(int j=0)
     a[0]=(float)globalinfo.resolution[0];
     a[1]=(float)globalinfo.resolution[1];
     glUniform2fv(glGetUniformLocation(program,"iResolution"),1,a);
-//把像素着色器的纹理绑定纹理单元GL_TEXURE0
+//把像素着色器的纹理绑定纹理单元GL_TEXURE0（也就是纹理位置）
     glUniform1i(glGetUniformLocation(program,"ourTexture"),0);
+    //glUniform1i(glGetUniformLocation(program,"Mesh_data"),1);
     if((m_v_data.F_V->value)!=NULL)
     {
         if(((Eigen::MatrixXf*)(m_v_data.F_V->value))->rows()>0)
@@ -207,8 +208,6 @@ void prepare_mesh_data()
                 {     
                     vertices[i*9+j*3+k]=V->coeff(F->coeff(i,j),k);
                     color[i*9+j*3+k]=0.7;
-                  
-            
                 }
     
             }
@@ -236,14 +235,9 @@ void prepare_mesh_data()
             
                     normal[9*i+3*j+k]=nor[2][k];
             
-                }
-        
-            }
-        
-    
+                }       
+            } 
         }
-
-
         unsigned int *indices=(unsigned int*)malloc(sizeof(unsigned int)*F->rows()*3);
         printf("cols:%d",F->cols());
         for(int i=0;i<F->rows();i++)
@@ -323,7 +317,7 @@ printf("width %d height %d\r\n",image.width,image.height);
 //printf("hello%dhello",(int)image.data[image.width*image.height*image.n+1]);
     _Texture_(image,textures[0]);
     stbi_image_free(image.data);
-//先把纹理绑定一个纹理单元GL_TEXTURE0
+//先把纹理绑定一个纹理单元GL_TEXTURE0(纹理位置)
     glActiveTexture(GL_TEXTURE0);
 
     glBindTexture(GL_TEXTURE_2D,textures[0]);
@@ -362,7 +356,8 @@ void draw_elements(GLuint program)
    int size1=node_size(m_v_data.E_V); 
    for(int node_i=size;node_i<size+size1;node_i++)
    {
-         Eigen::MatrixXi* F=(Eigen::MatrixXi*)m_v_data.E_E->value;      if(F->rows()==0)
+         Eigen::MatrixXi* F=(Eigen::MatrixXi*)m_v_data.E_E->value;    
+        if(F->rows()==0)
          {
             continue;
          }
@@ -374,10 +369,6 @@ void draw_elements(GLuint program)
    }
    glBindVertexArray(m_v_data.VAOs[size+size1]);
    glDrawArrays(GL_LINES,0,node_size(m_v_data.marked_edges)*2);
-    
-
-       
-    
 }
 void display(GLuint program)
 {//以下两个语句成对使用

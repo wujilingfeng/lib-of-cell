@@ -4,6 +4,7 @@ in vec3 ourColor;
 in vec2 TexCoord;
 in vec4 real_position;
 uniform sampler2D ourTexture;
+uniform sampler2D Mesh_data;
 uniform int Vsize;
 uniform vec2 iResolution;
 uniform float iTime;

@@ -118,22 +118,25 @@ void divi()
         }
         printf("\n");
     } 
-
-
-
-
-
 }
 void test_mesh_viewer_data()
 {
     Mesh_viewer_world m_world;
     Mesh_viewer_world_init(&m_world); 
-
-    char temp_c[]="ad";
-    if(strcmp(temp_c,"ad")==0)
-    {
-        printf("shide\n");
-    }
+    printf("species id:%d\n",m_world.species_id);
+    Node* node=Mesh_viewer_world_create_something(&m_world,"points");
+     printf("species id:%d\n",m_world.species_id);
+     if(node==0)
+     {
+        printf("huaile\n");
+     }
+    int id=((Mesh_view_something*)node->value)->name_id;
+    printf("species id:%d\n",m_world.species_id);
+    Node* node1=Mesh_viewer_world_find_species(&m_world,"points");
+   // id=2;
+    printf("points id:%d %d\n",id,*((int*)(node1->value)));
+    id=((Mesh_view_something*)node->value)->id;
+    printf("ms id:%d %d\n",id,m_world.something_id[*((int*)(node1->value))]);
     //Mesh_view_something ms;
     //Mesh_view_something_init(&ms);
    
@@ -162,7 +165,7 @@ void test()
     printf("%s%d:%d:%d\n", wday[p->tm_wday], p->tm_hour, p->tm_min, p->tm_sec);
 */
     test_mesh_viewer_data();
-      
+       
     Mesh mesh;
     _ReadCell_(&mesh,"cube.cell");
    // _ReadOff_(&mesh,"cube_.off",3);

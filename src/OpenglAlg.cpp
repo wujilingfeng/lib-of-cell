@@ -245,6 +245,8 @@ void _Texture_ (ImageInfo& image,GLuint texture)
 	glBindTexture(GL_TEXTURE_2D,texture);
 	//glTexStorage2D(GL_TEXTURE_2D,1,GL_RGB8,image.width,image.height);
 	//glTexSubImage2D(GL_TEXTURE_2D,0,0,0,image.width,image.height,GL_RGB,GL_UNSIGNED_BYTE,image.data);
+       //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+
         glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,image.width,image.height,0,GL_RGB,GL_UNSIGNED_BYTE,image.data);
 	
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
