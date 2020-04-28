@@ -1,4 +1,8 @@
-#### dependencies(optional)
+#### Libcell
+
+一种高维网格表示结构。能表示高维网格(线段，曲面，体结构...)，单形和非单形的网格，流形和非流形的网格...
+
+#### Dependencies(optional)
 
 * Eigen（不再维护相关代码）
 * Algebras
@@ -14,13 +18,16 @@ Algebras的张量库可以代替EIgen.
 
 #### install
 新建build文件夹，并进入.
+
+```bash
 cmake ..
 make 
 make install
+```
 
 #### 可视化
 
-推荐使用Mesh_viewer库，代码紧凑，功能齐全,仅仅依赖opengl，跨平台，只需添加必要数据即可显示.
+推荐使用Viewer库，代码紧凑，功能齐全,仅仅依赖opengl，跨平台，只需添加必要数据即可显示.
 
 libcell_tools_view.h文件添加了libcell支持Mesh_viewer的j小函数，方便你的使用.
 
