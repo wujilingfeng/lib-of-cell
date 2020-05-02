@@ -209,6 +209,8 @@ void increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,
         } 
         free_node(temp_node);
     }
+    
+    reset_c_prop(mesh);
     Node* node1=node2;
     while(node2!=NULL)
     {
@@ -219,7 +221,6 @@ void increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,
     //mesh->printself(mesh);
     free_node(node1);
     node1=NULL;
-    reset_c_prop(mesh);
     mesh->external_cell_init_(mesh);
     template_v**temp_v=(template_v**)malloc(sizeof(template_v*)*(rows-1));
     temp_v[rows-2]=v;

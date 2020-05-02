@@ -1143,6 +1143,35 @@ void Mesh_free(struct Mesh* own)
     }*/
 
 }
+static void default_free_v_prop(template_v*v)
+{
+    if(v->prop!=NULL)
+    {
+        free(v->prop);
+    }
+}
+static void default_free_hf_prop(template_hf*hf)
+{
+    if(hf->prop!=NULL)
+    {
+        free(hf->prop);
+    }
+}
+static void default_free_f_prop(template_f*f)
+{
+    if(f->prop!=NULL)
+    {
+        free(f->prop);
+    }
+}
+static void default_free_c_prop(template_c*c)
+{
+    if(c->prop!=NULL)
+    {
+        free(c->prop);
+    }
+}
+
 void Mesh_init(struct Mesh* own)
 {
     Cell_init_(&(own->external_cell));
@@ -1192,7 +1221,14 @@ void Mesh_init(struct Mesh* own)
     own->isolate_vertices=Mesh_isolate_vertices;
     own->printself=Mesh_printself;
     own->init_v_prop=NULL;own->init_c_prop=NULL;own->init_f_prop=NULL;own->init_hf_prop=NULL;
-    own->free_v_prop=NULL;own->free_c_prop=NULL;own->free_f_prop=NULL;own->free_hf_prop=NULL;
+    own->free_v_prop=default_free_v_prop;
+    own->free_c_prop=default_free_c_prop;
+    own->free_f_prop=default_free_f_prop;
+    own->free_hf_prop=default_free_hf_prop;
+  //  own->free_v_prop=NULL;
+   // own->free_c_prop=NULL;
+   // own->free_f_prop=NULL;
+   // own->free_hf_prop=NULL;
     own->prop=NULL;
     MeshT_init(&(own->traits));
 }
