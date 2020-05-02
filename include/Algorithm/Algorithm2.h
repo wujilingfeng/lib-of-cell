@@ -1,4 +1,4 @@
-//基于高精度的张量库算法，缺点是速度可能会慢，概念上的学习成本大，优点是概念上的统一（符合数学,张量天然稠密性）,算法简洁。高精度库保证精度不会出错
+//基于高精度的张量库算法,优点是概念上的统一（符合数学,张量天然稠密性）,算法简洁。高精度库保证精度不会出错
 #ifndef LIB_CELL_ALGORITHM1_H
 #define LIB_CELL_ALGORITHM1_H
 #include<math.h>
@@ -434,11 +434,21 @@ __mpf_struct* compute_simplex_cell_volume(Tensors_Algebra_System*tas,template_m 
 //借助凸包算法的剖分算法，注意和凸包算法的不一样
 //t是这些点所在子空间对应的反对称张量
 void convex_subdivision(Tensors_Algebra_System*tas,Tensor*t,Mesh* mesh,double **VV,int rows,int cols)
-{
-    double *temp_v=(double*)malloc(sizeof(double)*cols);
-    memset(temp_v,0,sizeof(double)*cols);
+{ 
     Tensor* t1=NULL,*t2=NULL;
     int k=0;
+    int size=0;
+    if(t->order(t)==cols)
+    {
+        size=cols+1; 
+    }
+    else
+    {
+        size=cols;
+    }
+    double *temp_v=(double*)malloc(sizeof(double)*size);
+    memset(temp_v,0,sizeof(double)*size);
+    //保证tas->as->elements->size和size一致
     for(unsigned int i=0;i<tas->as->elements->size;i++)
     {
         t1=tas->T_create();
@@ -456,18 +466,109 @@ void convex_subdivision(Tensors_Algebra_System*tas,Tensor*t,Mesh* mesh,double **
         tas->T_free(tas,t2);
         tas->T_free(tas,t1);
     }
+    printf("t2\n");
+    tensor_mpf_print_self(t2);
     //Mesh mesh;
     //Mesh_init(&mesh);
-    mesh->create_vertexv(mesh,temp_v,cols);
+    template_v*v0=mesh->create_vertexv(mesh,temp_v,size);
+    temp_v[size-1]=0;
+    //memset(temp_v,0,sizeof(double)*size);
     for(int i=0;i<rows;i++)
     {
-
-       mesh->create_vertexv(mesh,VV[i],cols);
+        if(size!=cols)
+        {
+            for(int j=0;j<cols;j++)
+            {
+                temp_v[j]=VV[i][j];
+            }
+            mesh->create_vertexv(mesh,temp_v,size);
+        }
+        else
+        {
+            mesh->create_vertexv(mesh,VV[i],cols);
+        }
     } 
     mesh_createconvex(tas,t2,mesh);
     tas->T_free(tas,t2);
     free(temp_v);
+    mesh->delete_vertex(mesh,*v0,true);
+}
+void delauny_subdivision(Tensors_Algebra_System* tas,Tensor*t,Mesh*mesh,double**VV,int rows,int cols)
+{
 
+    Tensor* t1=NULL,*t2=NULL;
+    int k=0;
+    int size=0;
+    if(t->order(t)==cols)
+    {
+        size=cols+1; 
+    }
+    else
+    {
+        size=cols;
+    }
+    double *temp_v=(double*)malloc(sizeof(double)*size);
+    memset(temp_v,0,sizeof(double)*size);
+    //保证tas->as->elements->size和size一致
+    //这里应该是寻找法向量t1
+    //然后将点延向量t1提升
+    for(unsigned int i=0;i<tas->as->elements->size;i++)
+    {
+        t1=tas->T_create();
+        k=i;
+        t1->insert(tas->as,t1,&k,1,tas->copy_from_double(1));
+        t2=Tensor_Wedge_(tas,t,t1);
+        if(t2->value->size!=0)
+        {
+            temp_v[i]=10000;
+            tas->T_free(tas,t1);
+            t1=NULL;
+            break;
+        }
+
+        tas->T_free(tas,t2);
+        tas->T_free(tas,t1);
+    }
+    double temp_d=0;
+    template_v* v0=mesh->create_vertexv(mesh,temp_v,size);
+    //memset(temp_v,0,sizeof(double)*size);
+    temp_v[k]=0;
+    //temp_v[size-1]=0;
+    for(int i=0;i<rows;i++)
+    {
+        if(size!=cols)
+        {
+            temp_d=0;
+            for(int j=0;j<cols;j++)
+            {
+                temp_d+=VV[i][j]*VV[i][j];
+                temp_v[j]=VV[i][j];
+            }
+            temp_v[k]=temp_d/2.0;
+            mesh->create_vertexv(mesh,temp_v,size);
+        }
+        else
+        {
+            temp_d=0;
+            for(int j=0;j<cols;j++)
+            {
+                temp_v[j]=VV[i][j];
+                temp_d+=VV[i][j]*VV[i][j];
+            }
+            temp_v[k]+=temp_d/2.0;
+            mesh->create_vertexv(mesh,temp_v,cols);
+        }
+    } 
+    mesh_createconvex(tas,t2,mesh);
+    tas->T_free(tas,t2);
+
+    free(temp_v);
+    mesh->delete_vertex(mesh,*v0,true);
+    for(auto iter=mesh->vertices.begin();iter!=mesh->vertices.end();iter++)
+    {
+        iter->second->point[k]=0;
+    } 
+     
 }
 //借助了凸包算法
 //求rows个点所围凸包的面积

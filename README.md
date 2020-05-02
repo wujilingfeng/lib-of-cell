@@ -24,7 +24,8 @@ cmake ..
 make 
 make install
 ```
-
+#### 算法
+利用Algebras库写了任意维的凸包算法，任意维的delauny剖分算法
 #### 可视化
 
 推荐使用Viewer库，代码紧凑，功能齐全,仅仅依赖opengl，跨平台，只需添加必要数据即可显示.
