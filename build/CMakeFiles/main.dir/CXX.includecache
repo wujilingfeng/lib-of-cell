@@ -11,7 +11,7 @@ math.h
 -
 Mesh/_Func_.h
 -
-Tensors/Antisymmetric_Tensor.h
+Tensors/Tensors_Operation.h
 -
 tools/mpf_tools.h
 -
@@ -57,6 +57,8 @@ string.h
 ../include/tool/libcell_tools_view.h
 Mesh/_Func_.h
 -
+string.h
+-
 
 ../thirdpart/Algebras/include/Space/Algebra_Fun_.h
 stdio.h
@@ -85,6 +87,10 @@ Space/Algebra_Fun_.h
 ../thirdpart/Algebras/include/Tensors/Antisymmetric_Tensor.h
 Tensors/Al_Tensors.h
 -
+
+../thirdpart/Algebras/include/Tensors/Tensors_Operation.h
+Antisymmetric_Tensor.h
+../thirdpart/Algebras/include/Tensors/Antisymmetric_Tensor.h
 
 ../thirdpart/Algebras/include/tools/mpf_tools.h
 Tensors/Antisymmetric_Tensor.h

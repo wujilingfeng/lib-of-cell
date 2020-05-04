@@ -306,6 +306,33 @@ Mesh_IO/Mesh_IO.cpp.s:
 	cd /home/libo/Documents/c++/libcell1.0/build && $(MAKE) -f src/CMakeFiles/libcell.dir/build.make src/CMakeFiles/libcell.dir/Mesh_IO/Mesh_IO.cpp.s
 .PHONY : Mesh_IO/Mesh_IO.cpp.s
 
+tool/libcell_tools_view.o: tool/libcell_tools_view.cpp.o
+
+.PHONY : tool/libcell_tools_view.o
+
+# target to build an object file
+tool/libcell_tools_view.cpp.o:
+	cd /home/libo/Documents/c++/libcell1.0/build && $(MAKE) -f src/CMakeFiles/libcell.dir/build.make src/CMakeFiles/libcell.dir/tool/libcell_tools_view.cpp.o
+.PHONY : tool/libcell_tools_view.cpp.o
+
+tool/libcell_tools_view.i: tool/libcell_tools_view.cpp.i
+
+.PHONY : tool/libcell_tools_view.i
+
+# target to preprocess a source file
+tool/libcell_tools_view.cpp.i:
+	cd /home/libo/Documents/c++/libcell1.0/build && $(MAKE) -f src/CMakeFiles/libcell.dir/build.make src/CMakeFiles/libcell.dir/tool/libcell_tools_view.cpp.i
+.PHONY : tool/libcell_tools_view.cpp.i
+
+tool/libcell_tools_view.s: tool/libcell_tools_view.cpp.s
+
+.PHONY : tool/libcell_tools_view.s
+
+# target to generate assembly for a file
+tool/libcell_tools_view.cpp.s:
+	cd /home/libo/Documents/c++/libcell1.0/build && $(MAKE) -f src/CMakeFiles/libcell.dir/build.make src/CMakeFiles/libcell.dir/tool/libcell_tools_view.cpp.s
+.PHONY : tool/libcell_tools_view.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -334,6 +361,9 @@ help:
 	@echo "... Mesh_IO/Mesh_IO.o"
 	@echo "... Mesh_IO/Mesh_IO.i"
 	@echo "... Mesh_IO/Mesh_IO.s"
+	@echo "... tool/libcell_tools_view.o"
+	@echo "... tool/libcell_tools_view.i"
+	@echo "... tool/libcell_tools_view.s"
 .PHONY : help
 
 

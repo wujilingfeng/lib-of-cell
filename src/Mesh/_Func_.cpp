@@ -1028,6 +1028,11 @@ iterator_c Mesh_vc_end(struct Mesh* own,const template_v&v)
 }
 Node* Mesh_vv_begin(struct Mesh* own,const template_v&v)
 {
+    if(own->simplex!=1)
+    {
+        printf("is not simplex\n");
+        return NULL;
+    }
     Node* node=NULL;
     for(iterator_f fit=Mesh_vf_begin(own,v);fit!=Mesh_vf_end(own,v);fit++)
     {
@@ -1145,30 +1150,30 @@ void Mesh_free(struct Mesh* own)
 }
 static void default_free_v_prop(template_v*v)
 {
-    if(v->prop!=NULL)
+    if(v->user_prop!=NULL)
     {
-        free(v->prop);
+        free(v->user_prop);
     }
 }
 static void default_free_hf_prop(template_hf*hf)
 {
-    if(hf->prop!=NULL)
+    if(hf->user_prop!=NULL)
     {
-        free(hf->prop);
+        free(hf->user_prop);
     }
 }
 static void default_free_f_prop(template_f*f)
 {
-    if(f->prop!=NULL)
+    if(f->user_prop!=NULL)
     {
-        free(f->prop);
+        free(f->user_prop);
     }
 }
 static void default_free_c_prop(template_c*c)
 {
-    if(c->prop!=NULL)
+    if(c->user_prop!=NULL)
     {
-        free(c->prop);
+        free(c->user_prop);
     }
 }
 

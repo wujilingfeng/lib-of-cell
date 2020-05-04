@@ -12,41 +12,40 @@ typedef struct Vertex{
    
     Node * cells;
     Node *faces;
-    void *prop;
+    void *prop,*user_prop;
 	VertexT traits;
 }Vertex;
 
 typedef struct HalfFace{
-int id;
-struct Vertex** vertices;
-int vertices_size;
-//要把cell类型该一下
-struct Cell* cell;
-struct Face* face;
-void *prop;
-HalfT traits;
+    int id;
+    struct Vertex** vertices;
+    int vertices_size;
+
+    struct Cell* cell;
+    struct Face* face;
+    void *prop,*user_prop;
+    HalfT traits;
 }HalfFace;
 
 typedef struct Face{
-int id;
-//vertices类型该换一下
-struct Vertex**vertices;
-int vertices_size;
-struct HalfFace* halffaces[2];
+    int id;
+    struct Vertex**vertices;
+    int vertices_size;
+    struct HalfFace* halffaces[2];
 //int halffaces_size;
 
-void *prop;
-FaceT traits;
+    void *prop,*user_prop;
+    FaceT traits;
 }Face;
 
 typedef struct Cell{
-int id;
+    int id;
 
-struct Vertex**vertices;
-int vertices_size;
-Node* halffaces;
-void *prop;
-CellT traits;
+    struct Vertex**vertices;
+    int vertices_size;
+    Node* halffaces;
+    void *prop,*user_prop;
+    CellT traits;
 }Cell;
 void Vertex_init_(Vertex*);
 void Face_init_(Face*);

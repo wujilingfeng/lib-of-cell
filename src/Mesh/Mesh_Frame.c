@@ -8,6 +8,7 @@ void Vertex_init_(Vertex* pv)
     pv->point=NULL;
     pv->point_size=0;
     pv->prop=NULL;
+    pv->user_prop=NULL;
 	VertexT_init(&(pv->traits));
 }
 void Cell_init_(Cell *pv)
@@ -17,12 +18,14 @@ void Cell_init_(Cell *pv)
 	pv->id=-1;
     pv->vertices_size=0;
     pv->prop=NULL;
+    pv->user_prop=NULL;
 	CellT_init(&(pv->traits));
 }
 
 void Face_init_(Face *f)
 {
 	f->prop=NULL;
+	f->user_prop=NULL;
     f->vertices=NULL;
 	f->id=-1;
     f->halffaces[0]=(template_hf*)malloc(sizeof(template_hf));
@@ -43,6 +46,7 @@ void HalfFace_init_(HalfFace *hf)
     hf->cell=NULL;
     hf->face=NULL;
     hf->prop=NULL;
+    hf->user_prop=NULL;
 	hf->id=-1;
 	HalfT_init(&(hf->traits));
 }

@@ -13,6 +13,7 @@ CMakeFiles/main.dir/Demo/main.cpp.o: ../thirdpart/Algebras/include/Space/Algebra
 CMakeFiles/main.dir/Demo/main.cpp.o: ../thirdpart/Algebras/include/Space/structures.h
 CMakeFiles/main.dir/Demo/main.cpp.o: ../thirdpart/Algebras/include/Tensors/Al_Tensors.h
 CMakeFiles/main.dir/Demo/main.cpp.o: ../thirdpart/Algebras/include/Tensors/Antisymmetric_Tensor.h
+CMakeFiles/main.dir/Demo/main.cpp.o: ../thirdpart/Algebras/include/Tensors/Tensors_Operation.h
 CMakeFiles/main.dir/Demo/main.cpp.o: ../thirdpart/Algebras/include/tools/mpf_tools.h
 CMakeFiles/main.dir/Demo/main.cpp.o: ../thirdpart/cstructures/include/iterator/cstruct_iterator.h
 CMakeFiles/main.dir/Demo/main.cpp.o: ../thirdpart/cstructures/include/tools_node.h

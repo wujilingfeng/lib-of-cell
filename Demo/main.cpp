@@ -15,7 +15,7 @@ void test_delauny()
     {
         v[i]=(double*)malloc(sizeof(double)*3);
     }
-    for(int i=0;i<800;i++)
+    for(int i=0;i<700;i++)
     {
         double r=1,delta=(rand()%2000)/1000.0-1,theta=(rand()%1000)/1000.0;
         theta=0.5;
@@ -24,7 +24,7 @@ void test_delauny()
         v[i][2]=r*cos(theta*M_PI); 
     }
 
-    for(int i=800;i<2000;i++)
+    for(int i=700;i<2000;i++)
     {
         double r=(rand()%1000)/1000.0,delta=(rand()%2000)/1000.0-1,theta=(rand()%1000)/1000.0;
         theta=0.5;

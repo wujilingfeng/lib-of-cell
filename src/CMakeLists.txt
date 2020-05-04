@@ -2,6 +2,8 @@
 #add_subdirectory(./Mesh)
 aux_source_directory(./Mesh MYSRC)
 aux_source_directory(./Mesh_IO MYSRC)
+
+aux_source_directory(./tool MYSRC)
 #option(ALGORITHM_USE "use algorithm " OFF)
 #IF(ALGORITHM_USE)
 #add_definitions(-DALGORITHM_USE)
