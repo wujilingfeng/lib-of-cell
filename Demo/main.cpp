@@ -18,7 +18,7 @@ void test_delauny()
     for(int i=0;i<700;i++)
     {
         double r=1,delta=(rand()%2000)/1000.0-1,theta=(rand()%1000)/1000.0;
-        theta=0.5;
+        //theta=0.5;
         v[i][0]=r*sin(theta*M_PI)*cos(delta*M_PI);
         v[i][1]=r*sin(theta*M_PI)*sin(delta*M_PI);
         v[i][2]=r*cos(theta*M_PI); 
@@ -27,7 +27,7 @@ void test_delauny()
     for(int i=700;i<2000;i++)
     {
         double r=(rand()%1000)/1000.0,delta=(rand()%2000)/1000.0-1,theta=(rand()%1000)/1000.0;
-        theta=0.5;
+        //theta=0.5;
         v[i][0]=r*sin(theta*M_PI)*cos(delta*M_PI);
         v[i][1]=r*sin(theta*M_PI)*sin(delta*M_PI);
         v[i][2]=r*cos(theta*M_PI);
@@ -35,10 +35,10 @@ void test_delauny()
     }
     Tensors_Algebra_System*tas=(Tensors_Algebra_System*)malloc(sizeof(Tensors_Algebra_System));
     //3是背景空间
-    Tensors_Algebra_System_mpf_init(tas,3);
+    Tensors_Algebra_System_mpf_init(tas,4);
     Tensor*t=tas->T_create();
     int ids[3]={0,1,2};
-    t->insert(tas->as,t,ids,2,tas->copy_from_double(1));
+    t->insert(tas->as,t,ids,3,tas->copy_from_double(1));
     tensor_mpf_print_self(t);
     //convex_subdivision(tas,t,&mesh,v,1110,2);
     delauny_subdivision(tas,t,&mesh,v,2000,3);
@@ -46,7 +46,7 @@ void test_delauny()
 
     //_WriteCell_(&mesh,"surface.cell");
     //mesh.printself(&mesh);
-    _WriteCell_(&mesh,"delauny_subdivision.cell");
+    _WriteCell_(&mesh,"delauny_subdivision3.cell");
     Tensors_Algebra_System_free(tas);
     free(tas);
     Mesh_free(&mesh);
@@ -96,6 +96,10 @@ void test_delauny()
     //Mesh_viewer_opengl_Interpreter_init(&moi);
     //moi.world=&mw;
     //moi.routine_show(&moi);
+    
+}
+void test_area()
+{
     
 }
 int main(int argc,char**argv)

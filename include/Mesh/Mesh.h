@@ -1,6 +1,7 @@
 #ifndef LIB_CELL_MESH_H
 #define LIB_CELL_MESH_H
 #include<map>
+#include<tools_rbtree.h>
 #include "lib_cell_Iterator.h"
 
 typedef struct Mesh{

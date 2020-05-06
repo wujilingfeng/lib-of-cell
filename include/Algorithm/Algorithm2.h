@@ -90,7 +90,8 @@ static bool libcell_is_same_dir(Tensors_Algebra_System*tas,Tensor*t1,Tensor*t2)
     __mpf_struct * re=(__mpf_struct*)(tas->T_inner_product(tas,t1,t2));
     //gmp_printf("re:%.Ff\n",re);
     int re1=mpf_cmp_ui(re,0);
-
+    mpf_clear(re);
+    free(re);
     if(re1>=0)
     {
         return true;
@@ -104,6 +105,9 @@ static bool libcell_is_same_dir(Tensors_Algebra_System*tas,Tensor*t1,Tensor*t2)
 //以给定的反对称张量作为正方向
 void increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,template_v*v)
 {
+    RB_Tree* tree=(RB_Tree*)malloc(sizeof(RB_Tree));
+    RB_Tree_init_int(tree);
+    RB_int rbt,*rbt1=NULL;
 //    int rows=v->point_size+1,cols=v->point_size;
     /*
     if(mesh->simplex!=)
@@ -124,8 +128,8 @@ void increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,
         M[rows-1][j]=v->point[j];
     }
     Node* node=NULL,*node2=NULL;
-    int *temp_int=(int*)malloc(sizeof(int)),*temp_int1=(int*)malloc(sizeof(int));
-    *temp_int=1;*temp_int1=0;
+    //int *temp_int=(int*)malloc(sizeof(int)),*temp_int1=(int*)malloc(sizeof(int));
+    //*temp_int=1;*temp_int1=0;
     for(auto cit=mesh->cells.begin();cit!=mesh->cells.end();cit++)
     {
         for(int i=0;i<rows-1;i++)
@@ -144,7 +148,9 @@ void increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,
         {
         //    printf("shi\n");
             node=node_overlying(node,(void*)cit->second);
-            cit->second->prop=(void*)temp_int;
+            //cit->second->prop=(void*)temp_int;
+            rbt.key=cit->second->id;
+            tree->insert(tree,&rbt);
             node2=node_overlying(node2,(void*)cit->second);
             tas->T_free(tas,t1);
             break;
@@ -153,7 +159,9 @@ void increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,
         else
         {
 
-            cit->second->prop=(void*)temp_int1;
+            //cit->second->prop=(void*)temp_int1;
+            rbt.key=cit->second->id;
+            tree->insert(tree,&rbt);
             tas->T_free(tas,t1);
         }
 
@@ -175,7 +183,9 @@ void increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,
                 c1=(template_c*)(hf1->cell);
                 if(c1==NULL)
                 {continue;} 
-                if(c1->prop!=NULL)
+                rbt.key=c1->id;
+                rbt1=(RB_int*)(tree->find(tree,&rbt));
+                if(rbt1!=NULL)
                 {
                     continue;
                 } 
@@ -196,13 +206,15 @@ void increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,
           //              printf("shi\n");
                         node=node_overlying(node,c1);
                         node2=node_overlying(node2,c1);
-                        c1->prop=(void*)temp_int;
+                      //  c1->prop=(void*)temp_int;
                     }
                     else
                     {
-                        c1->prop=(void*)temp_int1;
+                     //   c1->prop=(void*)temp_int1;
                     }
                     tas->T_free(tas,t1);
+                    rbt.key=c1->id;
+                    tree->insert(tree,&rbt);
 
                 }
             }
@@ -210,8 +222,8 @@ void increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,
         } 
         free_node(temp_node);
     }
-    
-    reset_c_prop(mesh);
+    RB_Tree_free(tree); 
+    //reset_c_prop(mesh);
     Node* node1=node2;
     while(node2!=NULL)
     {
@@ -260,8 +272,8 @@ void increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,
         free(M[i]);
     }
     free(M);
-    free(temp_int);
-    free(temp_int1);
+   // free(temp_int);
+   // free(temp_int1);
     free(temp_v);
 }
 
@@ -336,6 +348,7 @@ void mesh_createconvex(Tensors_Algebra_System*tas,Tensor* t,template_m*m)
         free(VV[i]);
     }
     free(VV);
+    printf("beigin\n");
     for(;iter!=m->vertices.end();iter++)
     {
         increasing_convex_hull(tas,t,m,iter->second); 
@@ -495,6 +508,8 @@ void convex_subdivision(Tensors_Algebra_System*tas,Tensor*t,Mesh* mesh,double **
     free(temp_v);
     mesh->delete_vertex(mesh,*v0,true);
 }
+//cols背景空间
+//给出mesh空间的反对称张量
 void delauny_subdivision(Tensors_Algebra_System* tas,Tensor*t,Mesh*mesh,double**VV,int rows,int cols)
 {
 
@@ -560,12 +575,16 @@ void delauny_subdivision(Tensors_Algebra_System* tas,Tensor*t,Mesh*mesh,double**
             temp_v[k]+=temp_d/2.0;
             mesh->create_vertexv(mesh,temp_v,cols);
         }
-    } 
+    }
+    tensor_mpf_print_self(t2);
+    printf("k:%d\n",k);
     mesh_createconvex(tas,t2,mesh);
+
     tas->T_free(tas,t2);
 
     free(temp_v);
     mesh->delete_vertex(mesh,*v0,true);
+     
     for(auto iter=mesh->vertices.begin();iter!=mesh->vertices.end();iter++)
     {
         iter->second->point[k]=0;

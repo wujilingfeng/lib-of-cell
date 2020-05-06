@@ -55,6 +55,7 @@ void free_HalfFace(HalfFace *hf)
 	if(hf->vertices!=NULL)
 	{
         	free(hf->vertices);
+            hf->vertices=NULL;
 	}
 	free(hf);
 	hf=NULL;

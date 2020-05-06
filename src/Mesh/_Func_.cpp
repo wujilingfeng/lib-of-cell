@@ -531,10 +531,16 @@ bool Mesh_delete_cell(struct Mesh* own,const template_c &c_,bool burning)
     while(node!=NULL)
     {
         node1=(Node*)(node->Next);
-        f=(template_f*)(((template_hf*)node->value)->face);
+      //  f=(template_f*)(((template_hf*)node->value)->face);
         //face要甩掉cell
         //Face_remove_c(f,c);
         Halfface_remove_c((template_hf*)(node->value),c);
+
+        auto hfit=own->halffaces.find(((template_hf*)(node->value))->id);
+        if(hfit!=own->halffaces.end())
+        {
+            own->halffaces.erase(hfit);
+        }
         node=node1;
     }
     template_v*v;
@@ -555,34 +561,16 @@ bool Mesh_delete_cell(struct Mesh* own,const template_c &c_,bool burning)
                 Vertex_remove_f((template_v*)f->vertices[i],f);
 
             }
-   
+  
             auto hfit=own->halffaces.find(f->halffaces[0]->id);
             if(hfit!=own->halffaces.end())
             {
-                if(hfit->second->vertices!=NULL)
-                {
-                    free(hfit->second->vertices);
-                
-                    hfit->second->vertices=NULL;
-                    hfit->second->vertices_size=0;
-                }
-
-                own->halffaces.erase(hfit);
-                
+                own->halffaces.erase(hfit);   
             }
             hfit=own->halffaces.find(f->halffaces[1]->id);
             if(hfit!=own->halffaces.end())
             {
-                if(hfit->second->vertices!=NULL)
-                {
-                    free(hfit->second->vertices);
-                
-                    hfit->second->vertices=NULL;
-                    hfit->second->vertices_size=0;
-                }
-
-                own->halffaces.erase(hfit);
-               
+                own->halffaces.erase(hfit);               
             }
 
   //          Mesh_delete_halfface(own,*(f->halffaces[0]),burning);
@@ -654,9 +642,12 @@ bool Mesh_vertex_is_boundary(struct Mesh* own,template_v &v)
 }
 //给它一个初始面，他会返回boundary的node链.这种寻找边界的方式.
 //返回半边
+//用红黑树RB_Tree做标记，代替prop
 Node* Mesh_node_of_boundary_face(struct Mesh* own,template_f *f_)
 {
-
+    RB_Tree* tree=(RB_Tree*)malloc(sizeof(RB_Tree));
+    RB_Tree_init_int(tree);
+    RB_int rbt,*rbt1=NULL;
     if(f_==NULL)
     {
         return NULL;
@@ -699,8 +690,8 @@ Node* Mesh_node_of_boundary_face(struct Mesh* own,template_f *f_)
     }
    // 深度优先的遍历
 //   printf("shendu\n");
-   int* temp_faces=(int*)malloc(sizeof(int));
-   *temp_faces=1;
+   //int* temp_faces=(int*)malloc(sizeof(int));
+   //*temp_faces=1;
     template_v *v;
     Node* node2;
     while(node!=NULL)
@@ -716,7 +707,9 @@ Node* Mesh_node_of_boundary_face(struct Mesh* own,template_f *f_)
         {
             hf=f->halffaces[1];
         }
-        f->prop=(void*)temp_faces;
+        rbt.key=f->id;
+        tree->insert(tree,&rbt);
+        //f->prop=(void*)temp_faces;
         for(int i=0;i<hf->vertices_size;i++)
         {
             v=(template_v*)hf->vertices[i];
@@ -726,7 +719,28 @@ Node* Mesh_node_of_boundary_face(struct Mesh* own,template_f *f_)
             {
                 if(Mesh_face_is_boundary(own,(template_f*)(node2->value)))
                 {
-                    if(((template_f*)(node2->value))->prop==NULL)
+                    /*if(((template_f*)(node2->value))->prop==NULL)
+                    {
+                        node=node_overlying(node,node2->value);
+                       void* temp_value=NULL;
+                        if(((template_f*)node2->value)->halffaces[0]->cell==NULL)
+                        {
+                           temp_value=(void*)(((template_f*)node2->value)->halffaces[0]);
+                            node3=node_overlying(node3,temp_value);
+                        }
+                        else if(((template_f*)node2->value)->halffaces[1]->cell==NULL)
+                        {
+
+                            temp_value=(void*)(((template_f*)node2->value)->halffaces[1]);
+                             node3=node_overlying(node3,temp_value);
+                        }
+                       
+                        goto push;
+                    
+                    }*/
+                    rbt.key=((template_f*)(node2->value))->id;
+                    rbt1=(RB_int*)tree->find(tree,&rbt);
+                    if(rbt1==NULL)
                     {
                         node=node_overlying(node,node2->value);
                        void* temp_value=NULL;
@@ -757,8 +771,8 @@ Node* Mesh_node_of_boundary_face(struct Mesh* own,template_f *f_)
         free(node1);
         node1=NULL;
     }
-    free(temp_faces);
-
+    //free(temp_faces);
+    RB_Tree_free(tree);
     return node3;
 }
 static Node* Mesh_one_dim_boundary(struct Mesh* own)
@@ -779,6 +793,7 @@ static Node* Mesh_one_dim_boundary(struct Mesh* own)
     }
     return node;
 }
+//
 void Mesh_external_cell_init_(struct Mesh* own)
 {
     
@@ -811,7 +826,7 @@ void Mesh_external_cell_init_(struct Mesh* own)
 
         return;
     }
-    reset_f_prop(own);
+    //reset_f_prop(own);
     while(node!=NULL)
     {
 

@@ -6,23 +6,3 @@
 
 #IncludeRegexTransform: 
 
-../include/Mesh/Cell_Traits.h
-stdlib.h
--
-tools_node.h
--
-stdio.h
--
-
-../include/Mesh/Mesh_Frame.h
-Cell_Traits.h
-../include/Mesh/Cell_Traits.h
-
-../thirdpart/cstructures/include/tools_node.h
-stdlib.h
--
-
-/home/libo/Documents/c++/libcell1.0/src/Mesh/Mesh_Frame.c
-Mesh/Mesh_Frame.h
--
-
