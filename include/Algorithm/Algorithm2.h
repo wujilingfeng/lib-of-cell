@@ -278,6 +278,7 @@ void increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,
 }
 
 //mesh是只包含顶点集合的mesh
+//t是凸包用到的反对称张量作为方向
 void mesh_createconvex(Tensors_Algebra_System*tas,Tensor* t,template_m*m)
 {
     if(m->num_v(m)<=0)
@@ -348,7 +349,7 @@ void mesh_createconvex(Tensors_Algebra_System*tas,Tensor* t,template_m*m)
         free(VV[i]);
     }
     free(VV);
-    printf("beigin\n");
+    //printf("beigin\n");
     for(;iter!=m->vertices.end();iter++)
     {
         increasing_convex_hull(tas,t,m,iter->second); 
@@ -481,7 +482,7 @@ void convex_subdivision(Tensors_Algebra_System*tas,Tensor*t,Mesh* mesh,double **
         tas->T_free(tas,t2);
         tas->T_free(tas,t1);
     }
-    printf("t2\n");
+    //printf("t2\n");
     tensor_mpf_print_self(t2);
     //Mesh mesh;
     //Mesh_init(&mesh);
@@ -591,6 +592,7 @@ void delauny_subdivision(Tensors_Algebra_System* tas,Tensor*t,Mesh*mesh,double**
     } 
      
 }
+//t是mesh所在子空间对应的反对称张量
 //借助了凸包算法
 //求rows个点所围凸包的面积
 

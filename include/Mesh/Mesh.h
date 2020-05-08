@@ -72,7 +72,7 @@ typedef struct Mesh{
 	void (*free_f_prop)(template_f*);
 	void (*free_hf_prop)(template_hf*);
 	Node* (*intersection_two_faces)(struct Mesh*,template_f*,template_f*);
-	Node* (*isolate_vertices)(struct Mesh*);
+	Node* (*non_manifold_vertices)(struct Mesh*);
 	void (*printself)(struct Mesh*);
 	int simplex;
 	void* prop;

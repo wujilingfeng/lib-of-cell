@@ -295,7 +295,7 @@ template_f* Mesh_create_facev(struct Mesh*own,template_v** temp_v,int size)
     }
     return f;
 }
-
+//要判断是否已经创建相应的cell
 template_c* Mesh_create_cellf(struct Mesh* own,template_hf**temp_hf,int size)
 {
     template_c* c=Mesh_create_cell(own);
@@ -882,7 +882,7 @@ template_hf* Mesh_s_opposite_halfface(template_hf*hf)
      }
      return NULL;
 }   
-Node* Mesh_isolate_vertices(struct Mesh* own)
+Node* Mesh_non_manifold_vertices(struct Mesh* own)
 {
     Node* re=NULL;
     for(auto iter=own->vertices.begin();iter!=own->vertices.end();iter++)
@@ -989,6 +989,10 @@ iterator_f Mesh_vf_begin(struct Mesh* own,const template_v& v)
 {
     iterator_f iff;
     iterator_f_init(&iff);
+    if(v.faces==NULL)
+    {
+        return iff;
+    }
     //可以通过node->traits记录起点增加速度
     if(v.faces->traits==NULL)
     {
@@ -1010,7 +1014,11 @@ iterator_hf Mesh_chf_begin(struct Mesh* own,const template_c& c)
 
     iterator_hf iff;
     iterator_hf_init(&iff);
-     if(c.halffaces->traits==NULL)
+    if(c.halffaces==NULL)
+    {
+        return iff;
+    }
+    if(c.halffaces->traits==NULL)
     {
         c.halffaces->traits=(void*)(node_reverse(c.halffaces));
     }
@@ -1029,6 +1037,10 @@ iterator_c Mesh_vc_begin(struct Mesh* own,const template_v&v)
 {
     iterator_c it;
     iterator_c_init(&it);
+    if(v.cells==NULL)
+    {
+        return it;
+    }
     it.node=*(v.cells);
     return it;
 
@@ -1141,22 +1153,28 @@ void Mesh_free(struct Mesh* own)
     {
 //        printf("external\n");
         free_node(own->external_cell.halffaces);
+        own->external_cell.halffaces=NULL;
     }
+
     for(auto iter=own->cells.begin();iter!=own->cells.end();iter++)
     {
 //        printf("cells\n");
         free_Cell(iter->second);
     }
+    own->cells.clear();
     for(auto iter=own->faces.begin();iter!=own->faces.end();iter++)
     {
 //        printf("faces\n");
         free_Face(iter->second);
     }
+    own->faces.clear();
+    own->halffaces.clear();
     for(auto iter=own->vertices.begin();iter!=own->vertices.end();iter++)
     {
 //        printf("vertices\n");
         free_Vertex(iter->second);
     }
+    own->vertices.clear();
     /*for(auto iter=own->halffaces.begin();iter!=own->vertices.end();iter++)
     {
         
@@ -1238,7 +1256,7 @@ void Mesh_init(struct Mesh* own)
     own->vv_begin=Mesh_vv_begin;
     own->vv_end=Mesh_vv_end;
     own->intersection_two_faces=Mesh_intersection_two_faces;
-    own->isolate_vertices=Mesh_isolate_vertices;
+    own->non_manifold_vertices=Mesh_non_manifold_vertices;
     own->printself=Mesh_printself;
     own->init_v_prop=NULL;own->init_c_prop=NULL;own->init_f_prop=NULL;own->init_hf_prop=NULL;
     own->free_v_prop=default_free_v_prop;

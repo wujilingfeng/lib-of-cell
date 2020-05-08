@@ -34,7 +34,6 @@ void test_delauny()
           
     }
     Tensors_Algebra_System*tas=(Tensors_Algebra_System*)malloc(sizeof(Tensors_Algebra_System));
-    //3是背景空间
     Tensors_Algebra_System_mpf_init(tas,4);
     Tensor*t=tas->T_create();
     int ids[3]={0,1,2};
@@ -46,6 +45,13 @@ void test_delauny()
 
     //_WriteCell_(&mesh,"surface.cell");
     //mesh.printself(&mesh);
+    //要记得删除非流形点
+    Node *nmv=mesh.non_manifold_vertices(&mesh);
+    for(auto nit=nmv;nit!=NULL;nit=(Node*)(nit->Next))
+    {
+        mesh.delete_vertex(&mesh,*((template_v*)(nit->value)),true);
+    }
+    free_node(nmv);
     _WriteCell_(&mesh,"delauny_subdivision3.cell");
     Tensors_Algebra_System_free(tas);
     free(tas);
@@ -100,6 +106,33 @@ void test_delauny()
 }
 void test_area()
 {
+    Mesh mesh;
+    Mesh_init(&mesh);
+    double **v=(double**)malloc(sizeof(double*)*8);
+    for(int i=0;i<8;i++)
+    {
+        v[i]=(double*)malloc(sizeof(double)*3);
+    }
+    v[0][0]=1;v[0][1]=-1;v[0][2]=-1;
+    v[1][0]=1;v[1][1]=-1;v[1][2]=1;
+    v[2][0]=1;v[2][1]=1;v[2][2]=1;
+    v[3][0]=1;v[3][1]=1;v[3][2]=-1;
+    v[4][0]=-1;v[4][1]=-1;v[4][2]=-1;
+    v[5][0]=-1;v[5][1]=-1;v[5][2]=1;
+    v[6][0]=-1;v[6][1]=1;v[6][2]=1;
+    v[7][0]=-1;v[7][1]=1;v[7][2]=-1;
+
+    Tensors_Algebra_System*tas=(Tensors_Algebra_System*)malloc(sizeof(Tensors_Algebra_System));
+    Tensors_Algebra_System_mpf_init(tas,4);
+    Tensor*t=tas->T_create();
+    int ids[3]={0,1,2};
+    t->insert(tas->as,t,ids,2,tas->copy_from_double(1));
+    tensor_mpf_print_self(t);
+    convex_subdivision(tas,t,&mesh,v,4,3);
+
+    auto re=compute_convex_area(tas,t,v,4,3);
+    gmp_printf("re:%.Ff\n",re);
+
     
 }
 int main(int argc,char**argv)
@@ -136,6 +169,7 @@ int main(int argc,char**argv)
     Tensors_Algebra_System_mpf_init(tas,3);
     __mpf_struct* re=area_simplex(tas,M,3,3);
     gmp_printf("re:%.Ff\n",re);
+    test_area();
     test_delauny();
     //printf("%f\n",area_simplex_double(M,3,3));
     //Tensor*t=Anti_tensor_mpf_from_v(tas,M,3,3);
