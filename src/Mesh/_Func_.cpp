@@ -216,6 +216,7 @@ template_c* Mesh_create_cell(struct Mesh* own)
     return c;
 
 }
+//如果返回NULL,意味创建失败
 template_hf * Mesh_create_halfface(struct Mesh* own,template_f* f,template_v** temp_v,int size)
 {
     if(f==NULL)
@@ -336,6 +337,7 @@ template_c* Mesh_create_cellf(struct Mesh* own,template_hf**temp_hf,int size)
 //应该写 Mesh_get_cellv，并用在下面判断(但速度会变慢)
 //以下程序也不能保证点到cell的遍历是顺(逆)时针(当cell表示面时)
 //创建单形使用的函数
+//如果返回NULL意味创建失败
 template_c* Mesh_create_cellv(struct Mesh* own,template_v** temp_v,int size)
 {
     template_c* c=Mesh_create_cell(own);
@@ -369,6 +371,10 @@ template_c* Mesh_create_cellv(struct Mesh* own,template_v** temp_v,int size)
         }
         template_f* f=Mesh_create_facev(own,temp_v1,size-1);
         template_hf* hf=Mesh_create_halfface(own,f,temp_v1,size-1);
+        if(hf==NULL)
+        {
+            return NULL;
+        }
         hf->cell=c;
         c->halffaces=node_overlying(c->halffaces,(void*)hf);
 //#endif

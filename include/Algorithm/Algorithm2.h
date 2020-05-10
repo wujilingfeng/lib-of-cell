@@ -103,7 +103,8 @@ static bool libcell_is_same_dir(Tensors_Algebra_System*tas,Tensor*t1,Tensor*t2)
 //增量凸包算法
 
 //以给定的反对称张量作为正方向
-void increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,template_v*v)
+//应该改为bool返回值的函数，用来接受是否成功
+bool increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,template_v*v)
 {
     RB_Tree* tree=(RB_Tree*)malloc(sizeof(RB_Tree));
     RB_Tree_init_int(tree);
@@ -237,6 +238,7 @@ void increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,
     mesh->external_cell_init_(mesh);
     template_v**temp_v=(template_v**)malloc(sizeof(template_v*)*(rows-1));
     temp_v[rows-2]=v;
+    
     for(Node* hfit=(mesh->external_cell.halffaces);hfit!=NULL;hfit=(Node*)(hfit->Next))
     {
        // printf("external size:%d\n",((template_hf*)(hfit->value))->vertices_size);
@@ -245,6 +247,7 @@ void increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,
 
             temp_v[i]=((template_hf*)(hfit->value))->vertices[i];
         }
+        //解决halfface退化为点的情况
         if(rows==3)
         {
             hf1=mesh->s_opposite_halfface((template_hf*)(hfit->value));
@@ -253,17 +256,22 @@ void increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,
             if(hf1->cell->vertices[0]==temp_v[0])
             {
                 temp_vv[0]=temp_v[1];temp_vv[1]=temp_v[0];
-                mesh->create_cellv(mesh,temp_vv,rows-1);
+                c0=(mesh->create_cellv(mesh,temp_vv,rows-1));
+                
             } 
             else
             {
-                mesh->create_cellv(mesh,temp_v,rows-1);
+                c0=mesh->create_cellv(mesh,temp_v,rows-1);
             }
         }
         else
         {
 
-            mesh->create_cellv(mesh,temp_v,rows-1);
+            c0=mesh->create_cellv(mesh,temp_v,rows-1);
+        }
+        if(c0==NULL)
+        {
+            return false;
         }
     }
    // mesh->printself(mesh);
@@ -275,15 +283,16 @@ void increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,
    // free(temp_int);
    // free(temp_int1);
     free(temp_v);
+    return true;
 }
 
 //mesh是只包含顶点集合的mesh
 //t是凸包用到的反对称张量作为方向
-void mesh_createconvex(Tensors_Algebra_System*tas,Tensor* t,template_m*m)
+bool mesh_createconvex(Tensors_Algebra_System*tas,Tensor* t,template_m*m)
 {
     if(m->num_v(m)<=0)
     {
-        return;
+        return false;
     }
     m->simplex=1;
 #ifdef MANIFOLD_REQUIRE
@@ -323,6 +332,7 @@ void mesh_createconvex(Tensors_Algebra_System*tas,Tensor* t,template_m*m)
    
     template_v **temp_v1=(template_v**)malloc(sizeof(template_v*)*cols);
     template_v*v0=NULL;
+    template_c*c0=NULL;
     for(int i=0;i<rows;i++)
     {
         int k=0;
@@ -341,7 +351,11 @@ void mesh_createconvex(Tensors_Algebra_System*tas,Tensor* t,template_m*m)
             temp_v1[0]=temp_v1[1];
             temp_v1[1]=v0;
         }
-        m->create_cellv(m,temp_v1,cols);
+        c0=m->create_cellv(m,temp_v1,cols);
+        if(c0==NULL)
+        {
+            return false;
+        }
     }
     free(index);
     for(int i=0;i<rows;i++)
@@ -352,14 +366,19 @@ void mesh_createconvex(Tensors_Algebra_System*tas,Tensor* t,template_m*m)
     //printf("beigin\n");
     for(;iter!=m->vertices.end();iter++)
     {
-        increasing_convex_hull(tas,t,m,iter->second); 
+        if(!increasing_convex_hull(tas,t,m,iter->second))
+        {
+            return false;
+        } 
     }
     free(temp_v);free(temp_v1);
+    return true;
 }
 //给一个张量的代数系统，和反对称张量做方向，计算点集的凸包
-void  from_v_createconvex(Tensors_Algebra_System* tas,Tensor* t,template_m* mesh,double** VV,int rows,int cols)
+bool  from_v_createconvex(Tensors_Algebra_System* tas,Tensor* t,template_m* mesh,double** VV,int rows,int cols)
 {
     mesh->simplex=1;
+    template_c*c0=NULL;
     int dim=t->order(t);
 #ifdef MANIFOLD_REQUIRE
     mesh->dimension=dim-1;
@@ -402,7 +421,11 @@ void  from_v_createconvex(Tensors_Algebra_System* tas,Tensor* t,template_m* mesh
             temp_v1[0]=temp_v1[1];
             temp_v1[1]=v0;
         }
-        mesh->create_cellv(mesh,temp_v1,dim);
+        c0=mesh->create_cellv(mesh,temp_v1,dim);
+        if(c0==NULL)
+        {
+            return false;
+        }
     }
     free(index);
     free(temp_v1);
@@ -410,8 +433,12 @@ void  from_v_createconvex(Tensors_Algebra_System* tas,Tensor* t,template_m* mesh
     for(int i=dim+1;i<rows;i++)
     {
         template_v* v=mesh->create_vertexv(mesh,VV[i],cols);
-        increasing_convex_hull(tas,t,mesh,v);
+        if(!increasing_convex_hull(tas,t,mesh,v))
+        {
+            return false;
+        }
     }
+    return true;
 
 }
 //求cell的体积
@@ -449,7 +476,8 @@ __mpf_struct* compute_simplex_cell_volume(Tensors_Algebra_System*tas,template_m 
 
 //借助凸包算法的剖分算法，注意和凸包算法的不一样
 //t是这些点所在子空间对应的反对称张量
-void convex_subdivision(Tensors_Algebra_System*tas,Tensor*t,Mesh* mesh,double **VV,int rows,int cols)
+
+bool convex_subdivision(Tensors_Algebra_System*tas,Tensor*t,Mesh* mesh,double **VV,int rows,int cols)
 { 
     Tensor* t1=NULL,*t2=NULL;
     int k=0;
@@ -504,14 +532,15 @@ void convex_subdivision(Tensors_Algebra_System*tas,Tensor*t,Mesh* mesh,double **
             mesh->create_vertexv(mesh,VV[i],cols);
         }
     } 
-    mesh_createconvex(tas,t2,mesh);
+    bool re=mesh_createconvex(tas,t2,mesh);
     tas->T_free(tas,t2);
     free(temp_v);
     mesh->delete_vertex(mesh,*v0,true);
+    return re;
 }
 //cols背景空间
 //给出mesh空间的反对称张量
-void delauny_subdivision(Tensors_Algebra_System* tas,Tensor*t,Mesh*mesh,double**VV,int rows,int cols)
+bool delauny_subdivision(Tensors_Algebra_System* tas,Tensor*t,Mesh*mesh,double**VV,int rows,int cols)
 {
 
     Tensor* t1=NULL,*t2=NULL;
@@ -579,7 +608,7 @@ void delauny_subdivision(Tensors_Algebra_System* tas,Tensor*t,Mesh*mesh,double**
     }
     tensor_mpf_print_self(t2);
     printf("k:%d\n",k);
-    mesh_createconvex(tas,t2,mesh);
+    bool re= mesh_createconvex(tas,t2,mesh);
 
     tas->T_free(tas,t2);
 
@@ -590,6 +619,7 @@ void delauny_subdivision(Tensors_Algebra_System* tas,Tensor*t,Mesh*mesh,double**
     {
         iter->second->point[k]=0;
     } 
+    return re;
      
 }
 //t是mesh所在子空间对应的反对称张量

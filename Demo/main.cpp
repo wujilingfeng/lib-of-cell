@@ -40,7 +40,10 @@ void test_delauny()
     t->insert(tas->as,t,ids,3,tas->copy_from_double(1));
     tensor_mpf_print_self(t);
     //convex_subdivision(tas,t,&mesh,v,1110,2);
-    delauny_subdivision(tas,t,&mesh,v,2000,3);
+    if(!delauny_subdivision(tas,t,&mesh,v,2000,3))
+    {
+        printf("liboodfsdferro\n");
+    }
     //from_v_createconvex(tas,t,&mesh,v,1200,3);
 
     //_WriteCell_(&mesh,"surface.cell");
@@ -54,7 +57,6 @@ void test_delauny()
     free_node(nmv);
     _WriteCell_(&mesh,"delauny_subdivision3.cell");
     Tensors_Algebra_System_free(tas);
-    free(tas);
     Mesh_free(&mesh);
 /*    from_v_createdelauny_simplex(&mesh,v,2000,3);
     for(auto it=mesh.vertices.begin();it!=mesh.vertices.end();it++)
