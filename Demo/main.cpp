@@ -13,8 +13,9 @@ void test_delauny()
     double **v=(double**)malloc(sizeof(double*)*2000);
     for(int i=0;i<2000;i++)
     {
-        v[i]=(double*)malloc(sizeof(double)*3);
+        v[i]=(double*)malloc(sizeof(double)*4);
     }
+    /*
     for(int i=0;i<700;i++)
     {
         double r=1,delta=(rand()%2000)/1000.0-1,theta=(rand()%1000)/1000.0;
@@ -23,8 +24,8 @@ void test_delauny()
         v[i][1]=r*sin(theta*M_PI)*sin(delta*M_PI);
         v[i][2]=r*cos(theta*M_PI); 
     }
-
-    for(int i=700;i<2000;i++)
+*/
+ /*   for(int i=700;i<2000;i++)
     {
         double r=(rand()%1000)/1000.0,delta=(rand()%2000)/1000.0-1,theta=(rand()%1000)/1000.0;
         //theta=0.5;
@@ -32,15 +33,23 @@ void test_delauny()
         v[i][1]=r*sin(theta*M_PI)*sin(delta*M_PI);
         v[i][2]=r*cos(theta*M_PI);
           
+    }*/
+    for(int i=0;i<2000;i++)
+    {
+        //theta=0.5;
+        v[i][0]=(rand()%2000)/900.0-1;
+        v[i][1]=(rand()%2000)/900.0-1;
+        v[i][2]=(rand()%2000)/900.0-1;
+        v[i][3]=(rand()%2000)/900.0-1;
     }
     Tensors_Algebra_System*tas=(Tensors_Algebra_System*)malloc(sizeof(Tensors_Algebra_System));
-    Tensors_Algebra_System_mpf_init(tas,4);
+    Tensors_Algebra_System_mpf_init(tas,5);
     Tensor*t=tas->T_create();
-    int ids[3]={0,1,2};
-    t->insert(tas->as,t,ids,3,tas->copy_from_double(1));
+    int ids[4]={0,1,2,3};
+    t->insert(tas->as,t,ids,4,tas->copy_from_double(1));
     tensor_mpf_print_self(t);
     //convex_subdivision(tas,t,&mesh,v,1110,2);
-    if(!delauny_subdivision(tas,t,&mesh,v,2000,3))
+    if(!delauny_subdivision(tas,t,&mesh,v,30,4))
     {
         printf("liboodfsdferro\n");
     }
@@ -55,7 +64,7 @@ void test_delauny()
         mesh.delete_vertex(&mesh,*((template_v*)(nit->value)),true);
     }
     free_node(nmv);
-    _WriteCell_(&mesh,"delauny_subdivision3.cell");
+    _WriteCell_(&mesh,"delauny_subdivision4.cell");
     Tensors_Algebra_System_free(tas);
     Mesh_free(&mesh);
 /*    from_v_createdelauny_simplex(&mesh,v,2000,3);

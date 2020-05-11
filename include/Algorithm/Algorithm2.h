@@ -8,7 +8,7 @@
 #include<tools/mpf_tools.h>
 int libcell_factorial(int n)
 {
-	int result=1;
+    int result=1;
     for(int i=2;i<=n;i++)
     {
         result=result*i;
@@ -19,61 +19,61 @@ int libcell_factorial(int n)
 //把一个二维数组(矩阵)转化为反对称张量(它的模长也等价求矩阵广义行列式)
 Tensor* Anti_tensor_mpf_from_v(Tensors_Algebra_System*tas,double**M,int rows,int cols)
 {
-	Tensor* re=tas->T_create();
-	for(int j=0;j<cols;j++)
-	{
-		re->insert(tas->as,re,&j,1,tas->copy_from_double(M[0][j]));
-	}
-	for(int i=1;i<rows;i++)
-	{	
-		Tensor *t=tas->T_create();
-		for(int j=0;j<cols;j++)
-		{
+    Tensor* re=tas->T_create();
+    for(int j=0;j<cols;j++)
+    {
+        re->insert(tas->as,re,&j,1,tas->copy_from_double(M[0][j]));
+    }
+    for(int i=1;i<rows;i++)
+    {   
+        Tensor *t=tas->T_create();
+        for(int j=0;j<cols;j++)
+        {
 
-			t->insert(tas->as,t,&j,1,tas->copy_from_double(M[i][j]));
-		}
-		Tensor*t1=Tensor_Wedge_(tas,re,t);
-		tas->T_free(tas,t);tas->T_free(tas,re);
-		re=t1;
-	}
-	return re;
+            t->insert(tas->as,t,&j,1,tas->copy_from_double(M[i][j]));
+        }
+        Tensor*t1=Tensor_Wedge_(tas,re,t);
+        tas->T_free(tas,t);tas->T_free(tas,re);
+        re=t1;
+    }
+    return re;
 }
 //求一些点集对应的反对称张量
 Tensor* Anti_tensor_mpf_from_point(Tensors_Algebra_System*tas,double**M,int rows,int cols)
 {
-	Tensor* re=tas->T_create();
-	for(int j=0;j<cols;j++)
-	{
+    Tensor* re=tas->T_create();
+    for(int j=0;j<cols;j++)
+    {
         if((M[1][j]-M[0][j])==0)
         {
             continue;
         }
         //printf("d:%lf\n",M[1][j]-M[0][j]);
-		re->insert(tas->as,re,&j,1,tas->copy_from_double(M[1][j]-M[0][j]));
-	}
-	for(int i=2;i<rows;i++)
-	{	
-		Tensor *t=tas->T_create();
-		for(int j=0;j<cols;j++)
-		{
+        re->insert(tas->as,re,&j,1,tas->copy_from_double(M[1][j]-M[0][j]));
+    }
+    for(int i=2;i<rows;i++)
+    {   
+        Tensor *t=tas->T_create();
+        for(int j=0;j<cols;j++)
+        {
 
             if((M[i][j]-M[0][j])==0)
             {
                 continue;
             }
             //printf("d:%lf\n",M[i][j]-M[0][j]);
-			t->insert(tas->as,t,&j,1,tas->copy_from_double(M[i][j]-M[0][j]));
-		}
-		Tensor*t1=Tensor_Wedge_(tas,re,t);
-		tas->T_free(tas,t);tas->T_free(tas,re);
-		re=t1;
-	}
+            t->insert(tas->as,t,&j,1,tas->copy_from_double(M[i][j]-M[0][j]));
+        }
+        Tensor*t1=Tensor_Wedge_(tas,re,t);
+        tas->T_free(tas,t);tas->T_free(tas,re);
+        re=t1;
+    }
     return re;
 }
 //输入rows个点组成的单形，输出体积
 __mpf_struct* area_simplex(Tensors_Algebra_System*tas,double**M,int rows,int cols)
 {
-	Tensor*t=Anti_tensor_mpf_from_point(tas,M,rows,cols);
+    Tensor*t=Anti_tensor_mpf_from_point(tas,M,rows,cols);
     __mpf_struct* re=(__mpf_struct*)(tas->T_norm(tas,t));
     tas->T_free(tas,t);
  //   mpf_t re1;
@@ -467,7 +467,8 @@ __mpf_struct* compute_simplex_cell_volume(Tensors_Algebra_System*tas,template_m 
         return NULL;
     }
     int rows=c->vertices_size;
-    int cols=((template_v*)(c->vertices[0]))->point_size;
+
+    int cols=((template_v*)(c->vertices[0]))->point_size; 
     double**M=(double**)malloc(sizeof(double*)*rows);
     for(int i=0;i<rows;i++)
     {
@@ -475,7 +476,7 @@ __mpf_struct* compute_simplex_cell_volume(Tensors_Algebra_System*tas,template_m 
     }
     int i=0;
     for(auto cv_iter=own->cv_begin(own,*c);cv_iter!=own->cv_end(own,*c);cv_iter++)
-    { 
+    {
         for(int j=0;j<(*cv_iter).point_size;j++) 
         {
             M[i][j]=(*cv_iter).point[j];
@@ -556,7 +557,7 @@ bool convex_subdivision(Tensors_Algebra_System*tas,Tensor*t,Mesh* mesh,double **
     return re;
 }
 //cols背景空间
-//给出mesh空间的反对称张量
+//给出mesh空间的反对称张量t
 bool delauny_subdivision(Tensors_Algebra_System* tas,Tensor*t,Mesh*mesh,double**VV,int rows,int cols)
 {
 
@@ -626,11 +627,17 @@ bool delauny_subdivision(Tensors_Algebra_System* tas,Tensor*t,Mesh*mesh,double**
     //tensor_mpf_print_self(t2);
     //printf("k:%d\n",k);
     bool re= mesh_createconvex(tas,t2,mesh);
+    if(!re)
+    {
+    }
+    else
+    {
 
+        mesh->delete_vertex(mesh,*v0,true);
+    }
     tas->T_free(tas,t2);
 
     free(temp_v);
-    mesh->delete_vertex(mesh,*v0,true);
      
     for(auto iter=mesh->vertices.begin();iter!=mesh->vertices.end();iter++)
     {
@@ -642,7 +649,7 @@ bool delauny_subdivision(Tensors_Algebra_System* tas,Tensor*t,Mesh*mesh,double**
 //t是mesh所在子空间对应的反对称张量
 //借助了凸包算法
 //求rows个点所围凸包的面积
-
+//似乎这样的算法不稳定
 __mpf_struct* compute_convex_area(Tensors_Algebra_System*tas,Tensor* t,double **VV,int rows,int cols)
 {
     Mesh mesh; 
@@ -655,9 +662,39 @@ __mpf_struct* compute_convex_area(Tensors_Algebra_System*tas,Tensor* t,double **
     /*
     convex_subdivision(tas,t,&mesh,VV,rows,cols);
     */
+
     if(!convex_subdivision(tas,t,&mesh,VV,rows,cols))
     {
-    	return re;
+        return re;
+    }
+    for(auto c_it=mesh.cells.begin();c_it!=mesh.cells.end();c_it++)
+    {
+        re1=compute_simplex_cell_volume(tas,&mesh,c_it->second);
+        //printf("libo\n");
+        mpf_add(re,re,re1);
+        mpf_clear(re1);
+        free(re1);
+        //printf("end\n");
+    }
+    Mesh_free(&mesh);
+    return re;
+}
+//输入同上
+__mpf_struct* compute_delauny_convex_area(Tensors_Algebra_System*tas,Tensor* t,double **VV,int rows,int cols)
+{
+    Mesh mesh; 
+    Mesh_init(&mesh);
+    __mpf_struct* re=(__mpf_struct*)malloc(sizeof(__mpf_struct)),*re1=NULL;
+    mpf_inits(re,NULL);
+    mpf_set_ui(re,0);
+    //mesh.simplex=1;
+    //还有一种方案是
+    /*
+    convex_subdivision(tas,t,&mesh,VV,rows,cols);
+    */
+    if(!delauny_subdivision(tas,t,&mesh,VV,rows,cols))
+    {
+        return re;
     }
     for(auto c_it=mesh.cells.begin();c_it!=mesh.cells.end();c_it++)
     {
@@ -667,14 +704,14 @@ __mpf_struct* compute_convex_area(Tensors_Algebra_System*tas,Tensor* t,double **
         free(re1);
     }
     Mesh_free(&mesh);
-    return re;
+    return re; 
 }
 /*double area_simplex_double(double**M,int rows,int cols)
 {
-	//rows respect point size
+    //rows respect point size
     if(rows>(cols+1))
     {
-	    printf("points are too much\r\n");
+        printf("points are too much\r\n");
         return 0;
     }
     Eigen::MatrixXd A(rows-1,cols);
