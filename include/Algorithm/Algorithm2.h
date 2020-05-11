@@ -271,6 +271,14 @@ bool increasing_convex_hull(Tensors_Algebra_System*tas,Tensor*t,template_m*mesh,
         }
         if(c0==NULL)
         {
+            for(int i=0;i<rows;i++)
+            {
+                free(M[i]);
+            }
+            free(M);
+   // free(temp_int);
+   // free(temp_int1);
+            free(temp_v);
             return false;
         }
     }
@@ -354,6 +362,14 @@ bool mesh_createconvex(Tensors_Algebra_System*tas,Tensor* t,template_m*m)
         c0=m->create_cellv(m,temp_v1,cols);
         if(c0==NULL)
         {
+            free(index);
+            for(int i=0;i<rows;i++)
+            {
+                free(VV[i]);
+            }
+            free(VV);
+            free(temp_v);free(temp_v1);
+            printf("mesh createconvex\n");
             return false;
         }
     }
@@ -368,6 +384,7 @@ bool mesh_createconvex(Tensors_Algebra_System*tas,Tensor* t,template_m*m)
     {
         if(!increasing_convex_hull(tas,t,m,iter->second))
         {
+            free(temp_v);free(temp_v1);
             return false;
         } 
     }
@@ -511,7 +528,7 @@ bool convex_subdivision(Tensors_Algebra_System*tas,Tensor*t,Mesh* mesh,double **
         tas->T_free(tas,t1);
     }
     //printf("t2\n");
-    tensor_mpf_print_self(t2);
+    //tensor_mpf_print_self(t2);
     //Mesh mesh;
     //Mesh_init(&mesh);
     template_v*v0=mesh->create_vertexv(mesh,temp_v,size);
@@ -535,7 +552,7 @@ bool convex_subdivision(Tensors_Algebra_System*tas,Tensor*t,Mesh* mesh,double **
     bool re=mesh_createconvex(tas,t2,mesh);
     tas->T_free(tas,t2);
     free(temp_v);
-    mesh->delete_vertex(mesh,*v0,true);
+    if(re){mesh->delete_vertex(mesh,*v0,true);}
     return re;
 }
 //cols背景空间
@@ -606,8 +623,8 @@ bool delauny_subdivision(Tensors_Algebra_System* tas,Tensor*t,Mesh*mesh,double**
             mesh->create_vertexv(mesh,temp_v,cols);
         }
     }
-    tensor_mpf_print_self(t2);
-    printf("k:%d\n",k);
+    //tensor_mpf_print_self(t2);
+    //printf("k:%d\n",k);
     bool re= mesh_createconvex(tas,t2,mesh);
 
     tas->T_free(tas,t2);
@@ -634,7 +651,14 @@ __mpf_struct* compute_convex_area(Tensors_Algebra_System*tas,Tensor* t,double **
     mpf_inits(re,NULL);
     mpf_set_ui(re,0);
     //mesh.simplex=1;
+    //还有一种方案是
+    /*
     convex_subdivision(tas,t,&mesh,VV,rows,cols);
+    */
+    if(!convex_subdivision(tas,t,&mesh,VV,rows,cols))
+    {
+    	return re;
+    }
     for(auto c_it=mesh.cells.begin();c_it!=mesh.cells.end();c_it++)
     {
         re1=compute_simplex_cell_volume(tas,&mesh,c_it->second);
@@ -642,7 +666,6 @@ __mpf_struct* compute_convex_area(Tensors_Algebra_System*tas,Tensor* t,double **
         mpf_clear(re1);
         free(re1);
     }
-
     Mesh_free(&mesh);
     return re;
 }

@@ -246,7 +246,7 @@ template_hf * Mesh_create_halfface(struct Mesh* own,template_f* f,template_v** t
         else
         {
 
-            printf("没办法，错误在这里\n"); 
+            printf("流形的网格拓扑错误\n"); 
             for(int i=0;i<size;i++)
             {
                 printf("%d ",temp_v[i]->id);
@@ -348,6 +348,7 @@ template_c* Mesh_create_cellv(struct Mesh* own,template_v** temp_v,int size)
     for(int i=0;i<size;i++)
     {
         c->vertices[i]=temp_v[i];
+
         temp_v[i]->cells=node_overlying(temp_v[i]->cells,(void*)c);
 //#ifdef SIMPLEX_REQUIRE   
         int temp_i=0;
@@ -373,8 +374,10 @@ template_c* Mesh_create_cellv(struct Mesh* own,template_v** temp_v,int size)
         template_hf* hf=Mesh_create_halfface(own,f,temp_v1,size-1);
         if(hf==NULL)
         {
+            free(temp_v1);
             return NULL;
         }
+
         hf->cell=c;
         c->halffaces=node_overlying(c->halffaces,(void*)hf);
 //#endif
