@@ -307,7 +307,7 @@ void _WriteCell_(template_m*m,char const* filename)
             v_it->second->prop=(void*)(&temp_v_id[temp_id]);
             for(int j=0;j<back_ground;j++)
             {
-                fprintf(outfile,"%lf ",v_it->second->point[j]);
+                fprintf(outfile,"%.11lf ",v_it->second->point[j]);
             }
             fprintf(outfile,"\n");
             temp_id++; 
