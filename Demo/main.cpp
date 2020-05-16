@@ -37,19 +37,19 @@ void test_delauny()
     for(int i=0;i<2000;i++)
     {
         //theta=0.5;
-        v[i][0]=(rand()%2000)/900.0-1;
-        v[i][1]=(rand()%2000)/900.0-1;
-        v[i][2]=(rand()%2000)/900.0-1;
-        v[i][3]=(rand()%2000)/900.0-1;
+        v[i][0]=(rand()%200000)/100000.0-1;
+        v[i][1]=(rand()%200000)/100000.0-1;
+        v[i][2]=(rand()%200000)/100000.0-1;
+        v[i][3]=(rand()%200000)/100000.0-1;
     }
     Tensors_Algebra_System*tas=(Tensors_Algebra_System*)malloc(sizeof(Tensors_Algebra_System));
-    Tensors_Algebra_System_mpf_init(tas,5);
+    Tensors_Algebra_System_mpf_init(tas,4);
     Tensor*t=tas->T_create();
     int ids[4]={0,1,2,3};
-    t->insert(tas->as,t,ids,4,tas->copy_from_double(1));
+    t->insert(tas->as,t,ids,3,tas->copy_from_double(1));
     tensor_mpf_print_self(t);
     //convex_subdivision(tas,t,&mesh,v,1110,2);
-    if(!delauny_subdivision(tas,t,&mesh,v,30,4))
+    if(!delauny_subdivision(tas,t,&mesh,v,2000,3))
     {
         printf("liboodfsdferro\n");
     }
@@ -64,7 +64,7 @@ void test_delauny()
         mesh.delete_vertex(&mesh,*((template_v*)(nit->value)),true);
     }
     free_node(nmv);
-    _WriteCell_(&mesh,"delauny_subdivision4.cell");
+    _WriteCell_(&mesh,"delauny_subdivision3.cell");
     Tensors_Algebra_System_free(tas);
     Mesh_free(&mesh);
 /*    from_v_createdelauny_simplex(&mesh,v,2000,3);
@@ -146,6 +146,29 @@ void test_area()
 
     
 }
+void test_convex()
+{
+    Mesh mesh;
+    Mesh_init(&mesh);
+    _ReadCell_(&mesh,"dual_topo_mesh.cell");
+    Node*n=NULL;
+    for(auto cit=mesh.cells.begin();cit!=mesh.cells.end();cit++)
+    {
+        n=node_overlying(n,cit->second);
+    }
+    for(Node*nit=n;nit!=NULL;nit=(Node*)(nit->Next))
+    {
+     //   printf("once\n");
+        mesh.delete_cell(&mesh,*((template_c*)(nit->value)),true);
+    }
+    Tensors_Algebra_System*tas=(Tensors_Algebra_System*)malloc(sizeof(Tensors_Algebra_System));
+    Tensors_Algebra_System_mpf_init(tas,4);
+    Tensor*t=tas->T_create();
+    int ids[4]={0,1,2,3};
+    t->insert(tas->as,t,ids,4,tas->copy_from_double(1));
+    mesh_createconvex(tas,t,&mesh);   
+    printf("f:%d c:%d\n",mesh.num_f(&mesh),mesh.num_c(&mesh));
+}
 int main(int argc,char**argv)
 {
     mpf_set_default_prec(200);
@@ -181,7 +204,8 @@ int main(int argc,char**argv)
     __mpf_struct* re=area_simplex(tas,M,3,3);
     gmp_printf("re:%.Ff\n",re);
     test_area();
-    test_delauny();
+    test_convex();
+    //test_delauny();
     //printf("%f\n",area_simplex_double(M,3,3));
     //Tensor*t=Anti_tensor_mpf_from_v(tas,M,3,3);
     //tensor_mpf_print_self(t);
@@ -197,6 +221,6 @@ int main(int argc,char**argv)
     }*/
    // _ReadCell_(&mesh,"hand.cell");
 
-    printf("end\n");
+    printf("zuiend\n");
     return 0;
 }

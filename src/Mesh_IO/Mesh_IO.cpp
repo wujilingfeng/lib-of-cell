@@ -293,11 +293,12 @@ void _WriteCell_(template_m*m,char const* filename)
    num[0]=m->num_v(m);
    num[1]=m->num_hf(m);
    num[2]=m->num_c(m);
-   
+    printf("herere libo ***********************************\n"); 
    if(m->simplex==1)
    {
 
         fprintf(outfile,"%d %d %d\n",num[0],0,num[2]);
+        printf("numc_%d\n",m->num_c(m));
         int *temp_v_id=(int*)malloc(sizeof(int)*num[0]);
         int temp_id=0;
         for(auto v_it=m->vertices.begin();v_it!=m->vertices.end();v_it++)
@@ -311,14 +312,18 @@ void _WriteCell_(template_m*m,char const* filename)
             fprintf(outfile,"\n");
             temp_id++; 
         }
+        int i=0;
         for(auto c_it=m->cells.begin();c_it!=m->cells.end();c_it++)
         { 
             fprintf(outfile,"%d ",c_it->second->vertices_size);
             for(auto cv_it=m->cv_begin(m,*(c_it->second));cv_it!=m->cv_end(m,*(c_it->second));cv_it++)
             {
+
+                //printf("i:%d %d  ",i,*((int*)((*cv_it).prop)));
                 fprintf(outfile,"%d ",*((int*)((*cv_it).prop))); 
             }
             fprintf(outfile,"\n");
+            i++;
         }
         free(temp_v_id);
         reset_v_prop(m);
