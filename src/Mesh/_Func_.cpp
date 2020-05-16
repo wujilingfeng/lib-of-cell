@@ -340,17 +340,11 @@ template_c* Mesh_create_cellf(struct Mesh* own,template_hf**temp_hf,int size)
 //如果返回NULL意味创建失败
 template_c* Mesh_create_cellv(struct Mesh* own,template_v** temp_v,int size)
 {
-    template_c* c=Mesh_create_cell(own);
-    c->vertices=(template_v**)malloc(sizeof(template_v*)*size);
-    c->vertices_size=size;
+    template_hf** hfs=(template_hf**)malloc(sizeof(template_hf*)*size);
 
     template_v** temp_v1=(template_v**)malloc(sizeof(template_v*)*(size-1));
     for(int i=0;i<size;i++)
     {
-        c->vertices[i]=temp_v[i];
-
-        temp_v[i]->cells=node_overlying(temp_v[i]->cells,(void*)c);
-//#ifdef SIMPLEX_REQUIRE   
         int temp_i=0;
         for(int j=0;j<size;j++)
         {
@@ -358,10 +352,9 @@ template_c* Mesh_create_cellv(struct Mesh* own,template_v** temp_v,int size)
             {
 
                 temp_v1[temp_i]=temp_v[j];
-	            temp_i++;
+                temp_i++;
             }
         }
-    //这样排顺序，是为了给一个单形的face,和另一个顶点p0,那么face_i p_0就是这个cell的点顺序
         if((size-i-1)%2==0)
         {}
         else if(size>2)
@@ -371,17 +364,34 @@ template_c* Mesh_create_cellv(struct Mesh* own,template_v** temp_v,int size)
             temp_v1[1]=vv;
         }
         template_f* f=Mesh_create_facev(own,temp_v1,size-1);
-        template_hf* hf=Mesh_create_halfface(own,f,temp_v1,size-1);
-        if(hf==NULL)
+        hfs[i]=Mesh_create_halfface(own,f,temp_v1,size-1);
+        if(hfs[i]==NULL)
         {
-            free(temp_v1);
-            return NULL;
+           free(temp_v1);free(hfs);
+           return NULL; 
         }
+    }
 
-        hf->cell=c;
-        c->halffaces=node_overlying(c->halffaces,(void*)hf);
+
+    template_c* c=Mesh_create_cell(own);
+    c->vertices=(template_v**)malloc(sizeof(template_v*)*size);
+    c->vertices_size=size;
+
+
+    for(int i=0;i<size;i++)
+    {
+        c->vertices[i]=temp_v[i];
+
+        temp_v[i]->cells=node_overlying(temp_v[i]->cells,(void*)c);
+//#ifdef SIMPLEX_REQUIRE   
+     
+    
+
+        hfs[i]->cell=c;
+        c->halffaces=node_overlying(c->halffaces,(void*)(hfs[i]));
 //#endif
     }
+    free(hfs);
     free(temp_v1);
     return c;
 }
