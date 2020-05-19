@@ -640,4 +640,3 @@ void meshtocell(char const * filename)
     free(tetrahedra);
 }
 
-

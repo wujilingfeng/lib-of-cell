@@ -65,7 +65,9 @@ Tensor* Anti_tensor_mpf_from_point(Tensors_Algebra_System*tas,double**M,int rows
             t->insert(tas->as,t,&j,1,tas->copy_from_double(M[i][j]-M[0][j]));
         }
         Tensor*t1=Tensor_Wedge_(tas,re,t);
-        tas->T_free(tas,t);tas->T_free(tas,re);
+        tas->T_free(tas,t);
+      //  tensor_mpf_print_self(re);
+        tas->T_free(tas,re);
         re=t1;
     }
     return re;

@@ -1,4 +1,7 @@
+//一些小算法
 #include<Mesh/_Func_.h>
+#include<Tensors/Tensors_Operation.h>
+#include<tools/mpf_tools.h>
 #ifdef MANIFOLD_REQUIRE
 //face要保证是单形
 Node* Mesh_adjust_nature_halffaces(Node*node)
@@ -199,8 +202,6 @@ int Mesh_is_local_min_max(template_m*m,template_v* v)
         {
             max=0;
         }
-
-
     }
     free_node(vvit);
     if(min==1)
@@ -219,4 +220,6 @@ int Mesh_is_local_min_max(template_m*m,template_v* v)
     return 2;
 
 }
+
+
 #endif

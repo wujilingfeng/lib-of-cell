@@ -128,44 +128,89 @@ void get_data_from_cell(Mesh* m,float**v,unsigned int**f)
 #endif 
 
 }
-//get boundary data from 3-dim cell
-void  get_data_from_3dim_cell(Mesh* m,float** Data,unsigned int** Data_index,unsigned int* Data_rows,unsigned int* Data_index_rows)
+void  get_data_from_3dim_cell(Mesh* m,float** v,unsigned int** f,unsigned int* Data_rows,unsigned int* Data_index_rows)
 {
-	m->external_cell_init_(m);
+#ifdef MANIFOLD_REQUIRE
+    if(m->dimension!=3)
+    {
+        printf("can't draw\n");
+        return ;
+    }
+#endif
+    //要重排vertices id
+
+    printf("hrer\n");
+    if((*v)!=0)
+    {
+        free((*v));
+    }
+    *v=(float*)malloc(sizeof(float)*m->num_v(m)*3);
+    memset(*v,0,sizeof(float)*m->num_v(m)*3);
+
+    printf("hrer\n");
+    m->external_cell_init_(m);
     int f_size=0;
-    (*Data)=(float*)malloc(sizeof(float)*3*m->num_v(m));
-    int i=0;
-    for(auto iter=m->vertices.begin();iter!=m->vertices.end();iter++)
+
+    template_hf* hf=NULL;
+    for(auto nit=m->external_cell.halffaces;nit!=NULL;nit=(Node*)(nit->Next))
     {
-        for(int j=0;j<iter->second->point_size;j++)
+        hf=(template_hf*)(nit->value);
+        for(int j=0;j<hf->vertices_size;j++)
         {
-            (*Data)[i*3+j]=iter->second->point[j];
-        
-        }
-        i++;
+            printf("%d ",hf->vertices[j]->id);
+        } 
+        printf("\n");
+        //printf("size:%d\n",hf->vertices_size);
+        f_size+=(hf->vertices_size+1);
     }
-     
-    for(Node* node=m->external_cell.halffaces;node!=0;node=(Node*)(node->Next))
-    {
-        
-        f_size+=(((template_hf*)(node->value))->vertices_size+1);
-         
-    }
-   // printf("f_size:%d\n",f_size);
-    (*Data_index)=(unsigned int*)malloc(sizeof(unsigned int)*f_size);
-    (*Data_index_rows)=node_size(m->external_cell.halffaces);
-    (*Data_rows)=m->num_v(m);
-    i=0;
-    for(Node* node=m->external_cell.halffaces;node!=0;node=(Node*)(node->Next))
-    {
-        template_hf* hf=(template_hf*)(node->value);
-        (*Data_index)[i]=hf->vertices_size;
-        i++;
-        for(auto iter=m->hfv_begin(m,*hf);iter!=m->hfv_end(m,*hf);iter++)
-        {
-            (*Data_index)[i]=(*iter).id;
-            i++;
-        }     
+    if((*f)!=0)
+    {free((*f));
     }
 
+    printf("hrer\n");
+    //int *temp_v_id=(int*)malloc(sizeof(int)*m->num_v(m));
+    *f=(unsigned int*)malloc(sizeof(unsigned int)*f_size);
+    memset(*f,0,sizeof(unsigned int)*f_size);
+    int i=0;
+    int* temp_v_id=(int*)malloc(sizeof(int)*m->num_v(m));
+    for(auto iter=m->vertices.begin();iter!=m->vertices.end();iter++)
+    {       
+        for(int j=0;j<3;j++)
+        {
+            (*v)[i*3+j]=iter->second->point[j];
+        //    temp_z+=(*v)[i*3+j]*(*v)[i*3+j];
+        }
+        temp_v_id[i]=i;
+        iter->second->prop=(void*)(&temp_v_id[i]);
+//       (*v)[i*3+2]=(float)temp_z/2.0;
+ /*       if(iter->second->id==500)
+        {
+            (*v)[i*3+2]=0.6;
+        }*/
+        i++; 
+    }
+    i=0;
+
+    printf("f_size:%d\n",f_size);
+    for(Node* nit=m->external_cell.halffaces;nit!=NULL;nit=(Node*)(nit->Next))
+    {
+        hf=(template_hf*)(nit->value);
+        hf=m->s_opposite_halfface(hf);
+        (*f)[i]=hf->vertices_size;
+        i++;
+        for(auto iter1=m->hfv_begin(m,*hf);iter1!=m->hfv_end(m,*hf);iter1++)
+        {
+            (*f)[i]=*((int*)((*iter1).prop));
+            printf("%d ",(*f)[i]);
+            i++;
+        } 
+
+        printf("\n");
+    }
+    reset_v_prop(m);
+    *Data_rows=m->num_v(m);
+    *Data_index_rows=node_size(m->external_cell.halffaces);
+    
+    free(temp_v_id);
 }
+

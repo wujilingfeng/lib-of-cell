@@ -25,31 +25,31 @@ void test_delauny()
         v[i][2]=r*cos(theta*M_PI); 
     }
 */
- /*   for(int i=700;i<2000;i++)
+    for(int i=0;i<2000;i++)
     {
-        double r=(rand()%1000)/1000.0,delta=(rand()%2000)/1000.0-1,theta=(rand()%1000)/1000.0;
+        double r=(rand()%1000000)/1000000.0,delta=(rand()%2000000)/1000000.0-1,theta=(rand()%1000000)/1000000.0;
         //theta=0.5;
         v[i][0]=r*sin(theta*M_PI)*cos(delta*M_PI);
         v[i][1]=r*sin(theta*M_PI)*sin(delta*M_PI);
         v[i][2]=r*cos(theta*M_PI);
           
-    }*/
-    for(int i=0;i<2000;i++)
+    }
+    /*for(int i=0;i<2000;i++)
     {
         //theta=0.5;
         v[i][0]=(rand()%2000000)/1000000.0-1;
         v[i][1]=(rand()%2000000)/1000000.0-1;
         v[i][2]=(rand()%2000000)/1000000.0-1;
         v[i][3]=(rand()%2000000)/1000000.0-1;
-    }
+    }*/
     Tensors_Algebra_System*tas=(Tensors_Algebra_System*)malloc(sizeof(Tensors_Algebra_System));
-    Tensors_Algebra_System_mpf_init(tas,5);
+    Tensors_Algebra_System_mpf_init(tas,4);
     Tensor*t=tas->T_create();
     int ids[5]={0,1,2,3,4};
-    t->insert(tas->as,t,ids,4,tas->copy_from_double(1));
+    t->insert(tas->as,t,ids,3,tas->copy_from_double(1));
     tensor_mpf_print_self(t);
     //convex_subdivision(tas,t,&mesh,v,1110,2);
-    if(!delauny_subdivision(tas,t,&mesh,v,30,4))
+    if(!delauny_subdivision(tas,t,&mesh,v,2000,3))
     {
         printf("liboodfsdferro\n");
     }
@@ -64,7 +64,7 @@ void test_delauny()
         mesh.delete_vertex(&mesh,*((template_v*)(nit->value)),true);
     }
     free_node(nmv);
-    _WriteCell_(&mesh,"delauny_subdivision4.cell");
+    _WriteCell_(&mesh,"delauny_subdivision3.cell");
     Tensors_Algebra_System_free(tas);
     Mesh_free(&mesh);
 /*    from_v_createdelauny_simplex(&mesh,v,2000,3);
@@ -169,6 +169,184 @@ void test_convex()
     mesh_createconvex(tas,t,&mesh);   
     printf("f:%d c:%d\n",mesh.num_f(&mesh),mesh.num_c(&mesh));
 }
+static bool zhuan_is_same_dir(Tensors_Algebra_System*tas,Tensor*t,template_v** v,int rows)
+{
+    int cols=v[0]->point_size;
+    double **M=(double**)malloc(sizeof(double*)*rows);
+    for(int i=0;i<rows;i++)
+    {
+        M[i]=(double*)malloc(sizeof(double)*cols);
+        for(int j=0;j<cols;j++)
+        {
+            M[i][j]=v[i]->point[j]; 
+        }
+    } 
+    printf("libo:%d %d \n",rows,cols); 
+
+    Tensor* t1=Anti_tensor_mpf_from_point(tas,M,rows,cols);
+  printf("liboend\n"); 
+    for(int i=0;i<rows;i++)
+    {
+        free(M[i]);
+        //M[i]=(double*)malloc(sizeof(double)*cols);
+    }
+    free(M);
+    bool re=libcell_is_same_dir(tas,t,t1);
+    tas->T_free(tas,t1);    
+    return re;
+}
+bool adjust_3dim_cell_vertices_order(Mesh*mesh)
+{
+    if(mesh->simplex==1)
+    {
+        return true;
+    }
+    int dim=mesh->dimension;
+    Tensors_Algebra_System*tas=(Tensors_Algebra_System*)malloc(sizeof(Tensors_Algebra_System));
+    Tensors_Algebra_System_mpf_init(tas,dim);
+    double ** M=(double**)malloc(sizeof(double*)*dim);
+    for(int i=0;i<dim;i++)
+    {
+        M[i]=(double*)malloc(sizeof(double)*dim);
+    }
+    template_v**temp_v=(template_v**)malloc(sizeof(template_v*)*dim);
+    template_v* v=NULL;
+    bool flag=false;
+    template_hf*hf=NULL;
+    for(auto iter=mesh->halffaces.begin();iter!=mesh->halffaces.end();iter++)
+    {
+        hf=iter->second;
+        for(int i=0;i<dim;i++)
+        {
+            for(int j=0;j<dim;j++)
+            {
+                M[i][j]=hf->vertices[i]->point[j];
+
+                printf("%lf ",M[i][j]);
+            }
+            printf("\n");
+        }
+        Tensor*t=Anti_tensor_mpf_from_point(tas,M,dim,dim);
+        //printf("here\n");
+        //tensor_mpf_print_self(t);
+       // break;
+        printf("vsize:%d\n",iter->second->vertices_size);
+        for(int i=dim;i<hf->vertices_size;i++)
+        {
+            printf("i:%d\n",i);
+            temp_v[0]=hf->vertices[i-1];
+            temp_v[1]=hf->vertices[0];
+
+            temp_v[2]=hf->vertices[i];
+            printf("hre\n");   
+            flag=zhuan_is_same_dir(tas,t,temp_v,dim);
+            
+
+            printf("he\n");
+            if(!flag)
+            {
+                printf("h\n");
+                //break;
+            }
+            else
+            {
+                printf("hre\n");      
+                for(int j=1;j<i;j++)
+                {
+                    temp_v[0]=hf->vertices[j-1];
+                    temp_v[1]=hf->vertices[j];
+                    temp_v[2]=hf->vertices[i];
+
+                    printf("hre\n");
+                    flag=zhuan_is_same_dir(tas,t,temp_v,dim);
+
+                    printf("ib\n"); 
+                    if(!flag)
+                    {
+                        v=hf->vertices[i];
+                        for(int k=i;k>j;k--)
+                        {
+                            hf->vertices[k]=hf->vertices[k-1];
+                        }
+                        hf->vertices[j]=v;
+                        break;
+                    }
+                }
+            }
+        }
+        //printf("once\n");
+        //tensor_mpf_print_self(t);
+        //printf("onceend\n");
+        tas->T_free(tas,t);
+        
+    }
+    for(int i=0;i<dim;i++)
+    {
+        free(M[i]);
+    }
+    free(M);
+    
+
+}
+void test_cell()
+{
+   Mesh mesh;
+   Mesh_init(&mesh);
+    _ReadCell_(&mesh,"out_mesh.cell");
+    Tensors_Algebra_System* tas=(Tensors_Algebra_System*)malloc(sizeof(Tensors_Algebra_System));
+    Tensors_Algebra_System_mpf_init(tas,3);
+    
+    adjust_3dim_cell_vertices_order(&mesh);
+    for(auto iter=mesh.faces.begin();iter!=mesh.faces.end();iter++)
+    {
+       template_hf* hf1=iter->second->halffaces[0];
+       template_hf* hf2=iter->second->halffaces[1];
+       if(hf1->cell==NULL)
+       {
+           for(int i=0;i<hf2->vertices_size;i++)
+           {
+                int j=hf2->vertices_size-i-1;
+                if(j>i)
+                {
+                    template_v* v=hf2->vertices[i];
+                    hf2->vertices[i]=hf2->vertices[j];
+                    hf2->vertices[j]=v;
+                }
+
+           } 
+       }
+       if(hf2->cell==NULL)
+       {
+            for(int i=0;i<hf1->vertices_size;i++)
+            {
+                int j=hf1->vertices_size-i-1;
+                if(j>i)
+                {
+                    template_v* v=hf1->vertices[i];
+                    hf1->vertices[i]=hf1->vertices[j];
+                    hf1->vertices[j]=v;
+                }
+
+           } 
+       }
+        
+    }
+    _WriteCell_(&mesh,"out_mesh_adjust.cell");
+    //Tensor* t=tas->T_create();
+    //int id;
+    //id=0;
+    //t->insert(tas->as,t,&id,1,tas->copy_from_double(0));
+    //id=1;
+    //t->insert(tas->as,t,&id,1,tas->copy_from_double(0));
+    //id=2;
+    //t->insert(tas->as,t,&id,1,tas->copy_from_double(1));
+    //Tensor*t1=Hodge_Anti_tensor_(tas,t);
+    //Mesh mesh1;
+    //Mesh_init(&mesh1);
+    //from_v_createconvex(tas,t1,&mesh1,);
+         
+      
+}
 int main(int argc,char**argv)
 {
     mpf_set_default_prec(200);
@@ -205,7 +383,8 @@ int main(int argc,char**argv)
     gmp_printf("re:%.Ff\n",re);
     test_area();
     //test_convex();
-    test_delauny();
+    //test_delauny();
+    test_cell();
     //printf("%f\n",area_simplex_double(M,3,3));
     //Tensor*t=Anti_tensor_mpf_from_v(tas,M,3,3);
     //tensor_mpf_print_self(t);
